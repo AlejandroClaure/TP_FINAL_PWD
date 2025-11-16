@@ -3,7 +3,8 @@ include_once 'configuracion.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ?>
-<?php include_once 'Vista/estructura/cabecera.php'; ?>
+
+<?php include_once $GLOBALS['VISTA_URL'] . 'estructura/cabecera.php'; ?>
 
 <main class="mt-5 pt-5">
    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">

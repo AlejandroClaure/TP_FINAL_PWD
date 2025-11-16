@@ -18,10 +18,11 @@ ini_set('display_errors', 1);
 
 
    <!-- CSS personalizados -->
-   <link rel="stylesheet" href="/Vista/css/cabecera.css">
-   <link rel="stylesheet" href="/Vista/css/pie.css">
-   <link rel="stylesheet" href="/Vista/css/albumProductos.css">
-   <link rel="stylesheet" href="/Vista/css/carrito.css">
+   <link rel="stylesheet" href="<?= $GLOBALS['CSS_URL']; ?>cabecera.css">
+   <link rel="stylesheet" href="<?= $GLOBALS['CSS_URL']; ?>pie.css">
+   <link rel="stylesheet" href="<?= $GLOBALS['CSS_URL']; ?>carrito.css">
+   <link rel="stylesheet" href="<?= $GLOBALS['CSS_URL']; ?>albumProductos.css">
+
 </head>
 
 <body>
@@ -43,11 +44,10 @@ ini_set('display_errors', 1);
 
             <div class="collapse navbar-collapse" id="navbarNav1">
                <ul class="navbar-nav ms-auto">
-                  <li class="nav-item"><a class="nav-link active" href="/PWD_TPFinal/index.php">Inicio</a></li>
-                  <li class="nav-item"><a class="nav-link" href="/PWD_TPFinal/Vista/producto/producto.php">Productos</a></li>
-                  <li class="nav-item"><a class="nav-link" href="/PWD_TPFinal/Vista/compra/carrito.php">Carrito</a></li>
-                  <li class="nav-item"><a class="nav-link" href="/PWD_TPFinal/Vista/contacto/contacto.php">Contacto</a></li>
-                  <li class="nav-item"><a class="nav-link" href="/PWD_TPFinal/Vista/login/login.php">Login</a></li>
+                  <li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['VISTA_URL']; ?>producto/producto.php">Productos</a></li>
+                  <li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['VISTA_URL']; ?>compra/carrito.php">Carrito</a></li>
+                  <li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['VISTA_URL']; ?>contacto/contacto.php">Contacto</a></li>
+                  <li class="nav-item"><a class="nav-link" href="<?= $GLOBALS['VISTA_URL']; ?>login/login.php">Login</a></li>
                </ul>
             </div>
          </div>

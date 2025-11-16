@@ -1,21 +1,17 @@
 <?php
-/////////////////////////////////////
-///////// CONFIGURACIÓN APP /////////
-/////////////////////////////////////
-
 // Nombre del proyecto
 $PROYECTO = 'PWD_TPFinal';
 
-// Ruta absoluta al proyecto
+// Ruta física
 $ROOT = $_SERVER['DOCUMENT_ROOT'] . "/$PROYECTO/";
 
-// Variables globales
+// URL pública
+$BASE_URL = "/" . $PROYECTO . "/";
+
+// Rutas globales
 $GLOBALS['ROOT_PROYECTO'] = $ROOT;
-
-// Rutas útiles
-$GLOBALS['VISTA'] = $ROOT . "Vista/";
-$GLOBALS['IMGS'] = $ROOT . "Vista/imagenes/";
-$GLOBALS['CSS'] = $ROOT . "Vista/css/";
-
-
+$GLOBALS['BASE_URL'] = $BASE_URL;
+$GLOBALS['VISTA_URL'] = $BASE_URL . "Vista/";
+$GLOBALS['CSS_URL'] = $BASE_URL . "Vista/css/";
+$GLOBALS['IMG_URL'] = $BASE_URL . "Vista/imagenes/";
 ?>

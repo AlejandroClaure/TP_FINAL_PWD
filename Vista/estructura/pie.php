@@ -9,12 +9,18 @@
          </div>
 
          <div class="row g-4">
+
             <!-- Integrante 1 -->
             <div class="col-lg-3 col-md-6">
                <div class="team-member text-center p-4">
-                  <img src="../imagenes/alejandro.jpg" alt="Alejandro Claure" class="mb-4 shadow rounded-circle" width="120" height="120">
+                  <img src="<?= $GLOBALS['IMG_URL'] ?>alejandro.jpg"
+                       alt="Alejandro Claure"
+                       class="mb-4 shadow rounded-circle"
+                       width="120" height="120">
+
                   <h5 class="mb-1">Alejandro Claure</h5>
                   <p class="text-muted mb-3">Estudiante</p>
+
                   <div class="social-links">
                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
                      <a href="#"><i class="fab fa-twitter"></i></a>
@@ -26,9 +32,14 @@
             <!-- Integrante 2 -->
             <div class="col-lg-3 col-md-6">
                <div class="team-member text-center p-4">
-                  <img src="../imagenes/lucia.jpg" alt="Lucía Hernández" class="mb-4 shadow rounded-circle" width="120" height="120">
+                  <img src="<?= $GLOBALS['IMG_URL'] ?>lucia.jpg"
+                       alt="Lucía Hernández"
+                       class="mb-4 shadow rounded-circle"
+                       width="120" height="120">
+
                   <h5 class="mb-1">Lucía Hernández</h5>
                   <p class="text-muted mb-3">Estudiante</p>
+
                   <div class="social-links">
                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
                      <a href="#"><i class="fab fa-github"></i></a>
@@ -40,9 +51,14 @@
             <!-- Integrante 3 -->
             <div class="col-lg-3 col-md-6">
                <div class="team-member text-center p-4">
-                  <img src="../imagenes/carolina.jpg" alt="Carolina Otermin" class="mb-4 shadow rounded-circle" width="120" height="120">
+                  <img src="<?= $GLOBALS['IMG_URL'] ?>carolina.jpg"
+                       alt="Carolina Otermin"
+                       class="mb-4 shadow rounded-circle"
+                       width="120" height="120">
+
                   <h5 class="mb-1">Carolina Otermin</h5>
                   <p class="text-muted mb-3">Estudiante</p>
+
                   <div class="social-links">
                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
                      <a href="#"><i class="fab fa-dribbble"></i></a>
@@ -54,9 +70,14 @@
             <!-- Integrante 4 -->
             <div class="col-lg-3 col-md-6">
                <div class="team-member text-center p-4">
-                  <img src="../imagenes/cyntia.jpg" alt="Nasabun Cyntia" class="mb-4 shadow rounded-circle" width="120" height="120">
+                  <img src="<?= $GLOBALS['IMG_URL'] ?>cyntia.jpg"
+                       alt="Nasabun Cyntia"
+                       class="mb-4 shadow rounded-circle"
+                       width="120" height="120">
+
                   <h5 class="mb-1">Nasabun Cyntia</h5>
                   <p class="text-muted mb-3">Estudiante</p>
+
                   <div class="social-links">
                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
                      <a href="#"><i class="fab fa-twitter"></i></a>
@@ -64,12 +85,12 @@
                   </div>
                </div>
             </div>
+
          </div>
       </div>
    </section>
 </footer>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
