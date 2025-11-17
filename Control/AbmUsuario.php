@@ -2,42 +2,128 @@
 
 class AbmUsuario {
 
-    /**
-     * REGISTRAR USUARIO
-     */
-    public function registrar($param) {
-    $obj = new Usuario();
+    /** CARGAR OBJETO SIN CLAVE (ALTA) */
+    private function cargarObjetoSinClave($param){
+        $obj = null;
 
-    // Hashear contraseña
-    $hash = password_hash($param["uspass"], PASSWORD_DEFAULT);
+        if( isset($param['usnombre']) &&
+            isset($param['uspass']) &&
+            isset($param['usmail']) ) {
 
-    $obj->setear(0, $param["usnombre"], $hash, $param["usmail"], null);
+            $hash = password_hash($param['uspass'], PASSWORD_DEFAULT);
 
-    return $obj->insertar();
-}
+            $obj = new Usuario();
+            $obj->setear(
+                null,
+                $param['usnombre'],
+                $hash,
+                $param['usmail'],
+                null
+            );
+        }
+        return $obj;
+    }
 
+    /** CARGAR OBJETO CON CLAVE (MODIFICAR) */
+    private function cargarObjeto($param){
+        $obj = null;
 
-    /**
-     * BUSCAR USUARIOS
-     */
-    public function buscar($param) {
+        if( isset($param['idusuario']) &&
+            isset($param['usnombre']) &&
+            isset($param['usmail']) ) {
 
-        $obj = new Usuario();
+            $obj = new Usuario();
+
+            // Si hay contraseña nueva → hash
+            $pass = null;
+            if (!empty($param['uspass'])) {
+                $pass = password_hash($param['uspass'], PASSWORD_DEFAULT);
+            } else {
+                // Si la contraseña viene vacía, mantenemos la actual
+                $obj->setIdUsuario($param['idusuario']);
+                $obj->cargar();
+                $pass = $obj->getUsPass();
+            }
+
+            $obj->setear(
+                $param['idusuario'],
+                $param['usnombre'],
+                $pass,
+                $param['usmail'],
+                null
+            );
+        }
+
+        return $obj;
+    }
+
+    private function seteadosCamposClaves($param){
+        return isset($param['idusuario']);
+    }
+
+    /** ALTA DESDE PANEL ADMIN */
+    public function alta($param){
+        $resp = false;
+        $obj = $this->cargarObjetoSinClave($param);
+
+        if ($obj != null && $obj->insertar()) {
+            $resp = true;
+        }
+        return $resp;
+    }
+
+    /** REGISTRAR DESDE FORMULARIO PÚBLICO */
+    public function registrar($param){
+        return $this->alta($param);
+    }
+
+    /** BAJA */
+    public function baja($param){
+        $resp = false;
+
+        if ($this->seteadosCamposClaves($param)) {
+            $obj = new Usuario();
+            $obj->setIdUsuario($param['idusuario']);
+
+            if ($obj->eliminar()) {
+                $resp = true;
+            }
+        }
+        return $resp;
+    }
+
+    /** MODIFICACION */
+    public function modificacion($param){
+        $resp = false;
+
+        if ($this->seteadosCamposClaves($param)) {
+            $obj = $this->cargarObjeto($param);
+
+            if ($obj != null && $obj->modificar()) {
+                $resp = true;
+            }
+        }
+
+        return $resp;
+    }
+
+    /** BUSCAR */
+    public function buscar($param){
         $where = " true ";
 
-        if (isset($param['idusuario'])) {
-            $where .= " AND idusuario = " . $param['idusuario'];
-        }
-        if (isset($param['usnombre'])) {
-            $where .= " AND usnombre = '" . $param['usnombre'] . "'";
-        }
-        if (isset($param['usmail'])) {
-            $where .= " AND usmail = '" . $param['usmail'] . "'";
-        }
-        if (isset($param['uspass'])) {
-            $where .= " AND uspass = '" . $param['uspass'] . "'";
+        if ($param != null){
+
+            if (isset($param['idusuario']))
+                $where .= " AND idusuario = " . $param['idusuario'];
+
+            if (isset($param['usnombre']))
+                $where .= " AND usnombre LIKE '%" . $param['usnombre'] . "%'";
+
+            if (isset($param['usmail']))
+                $where .= " AND usmail LIKE '%" . $param['usmail'] . "%'";
         }
 
+        $obj = new Usuario();
         return $obj->listar($where);
     }
 }

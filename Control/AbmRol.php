@@ -58,6 +58,12 @@ class AbmRol {
         return $objRol->listar($where);
     }
 
+   
+    public function listar() {
+        $objRol = new Rol();
+        return $objRol->listar();
+    }
+
     private function seteadosCamposClaves($params) {
         return isset($params['idrol']);
     }

@@ -1,136 +1,167 @@
 <?php
-include_once '../../configuracion.php';
+include_once dirname(__DIR__, 2) . '/configuracion.php';
+
+// Iniciar sesión si no existe
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $session = new Session();
+$usuario = $session->getUsuario();
 
-// Solo usuarios logueados (idealmente admin)
-if (!$session->activa()) {
-    header("Location: ../login/login.php");
+// Proteger acceso solo para admin
+$abmUR = new AbmUsuarioRol();
+$rolesUsuario = $abmUR->rolesDeUsuario($usuario->getIdUsuario());
+
+if (!in_array("admin", $rolesUsuario)) {
+    header("Location: ../error/noAutorizado.php");
     exit;
 }
 
-$usuarioActual = $session->getUsuario();
+$abmRol = new AbmRol();
+$listaRoles = $abmRol->listar();
 
-// Controladores
 $abmUsuario = new AbmUsuario();
-$abmUsuarioRol = new AbmUsuarioRol();
-$abmRol = new Rol();
-
-// Procesar acciones (asignar / quitar)
-if ($_POST && isset($_POST['accion'])) {
-
-    if ($_POST['accion'] === 'asignar') {
-        $abmUsuarioRol->asignarRol($_POST['idusuario'], $_POST['idrol']);
-    }
-
-    if ($_POST['accion'] === 'quitar') {
-        $abmUsuarioRol->quitarRol($_POST['idusuario'], $_POST['idrol']);
-    }
-
-    header("Location: panelRoles.php");
-    exit;
-}
-
-// Obtener usuarios y roles
-$usuarios = $abmUsuario->buscar([]);
-$roles = (new Rol())->listar("");
+$listaUsuarios = $abmUsuario->buscar([]);
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Panel de Roles</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+<?php include_once dirname(__DIR__) . "/estructura/cabecera.php"; ?>
 
-<body class="bg-light">
+<div class="container mt-5 pt-5">
 
-<div class="container mt-5">
-    <h2 class="mb-4">Administración de Roles</h2>
+    <!-- TÍTULO Y BOTÓN VOLVER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Administración de Roles</h2>
+        <a href="<?= $GLOBALS['BASE_URL']; ?>" class="btn btn-secondary">
+            <i class="fa fa-arrow-left"></i> Volver al inicio
+        </a>
+    </div>
 
-    <div class="card shadow-sm">
+    <!-- ================== CREAR ROL ================== -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-primary text-white">Crear nuevo rol</div>
         <div class="card-body">
+            <form action="accion/crearRol.php" method="POST">
+                <div class="input-group">
+                    <input type="text" name="rodescripcion" class="form-control" placeholder="Nombre del rol" required>
+                    <button class="btn btn-success">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-            <table class="table table-bordered table-striped">
+    <!-- ================== LISTA ROLES ================== -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-dark text-white">Roles existentes</div>
+        <div class="card-body">
+            <table class="table table-striped text-center align-middle">
                 <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Usuario</th>
-                    <th>Email</th>
-                    <th>Roles actuales</th>
-                    <th>Asignar nuevo rol</th>
-                </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Descripción</th>
+                        <th style="width: 200px;">Acciones</th>
+                    </tr>
                 </thead>
 
                 <tbody>
-
-                <?php foreach ($usuarios as $u): ?>
-                    <?php
-                    $rolesUser = $abmUsuarioRol->rolesDeUsuario($u->getIdUsuario());
-                    ?>
+                <?php foreach ($listaRoles as $rol): ?>
                     <tr>
-                        <td><?= $u->getIdUsuario(); ?></td>
-                        <td><?= $u->getUsNombre(); ?></td>
-                        <td><?= $u->getUsMail(); ?></td>
-
-                        <!-- Mostrar roles actuales -->
+                        <td><?= $rol->getIdRol(); ?></td>
+                        <td><?= $rol->getRoDescripcion(); ?></td>
                         <td>
-                            <?php if (empty($rolesUser)): ?>
-                                <span class="badge bg-secondary">Sin roles</span>
-                            <?php else: ?>
-                                <?php foreach ($rolesUser as $rolDesc): ?>
-                                    <form method="POST" class="d-inline">
-                                        <input type="hidden" name="idusuario" value="<?= $u->getIdUsuario(); ?>">
-                                        <input type="hidden" name="accion" value="quitar">
+                            <button class="btn btn-warning btn-sm"
+                                onclick="editarRol(<?= $rol->getIdRol(); ?>, '<?= $rol->getRoDescripcion(); ?>')">
+                                <i class="fa fa-edit"></i> Editar
+                            </button>
 
-                                        <?php
-                                        // Buscar idrol de este rol
-                                        foreach ($roles as $r) {
-                                            if ($r->getRoDescripcion() === $rolDesc) {
-                                                $idRolActual = $r->getIdRol();
-                                            }
-                                        }
-                                        ?>
-                                        <input type="hidden" name="idrol" value="<?= $idRolActual; ?>">
-
-                                        <span class="badge bg-primary">
-                                            <?= $rolDesc ?>
-                                            <button class="btn btn-sm btn-danger ms-1">x</button>
-                                        </span>
-                                    </form>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
+                            <a href="accion/eliminarRol.php?idrol=<?= $rol->getIdRol(); ?>"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('¿Seguro que deseas eliminar este rol?')">
+                                <i class="fa fa-trash"></i> Eliminar
+                            </a>
                         </td>
-
-                        <!-- Asignar un nuevo rol -->
-                        <td>
-                            <form method="POST" class="d-flex gap-2">
-                                <input type="hidden" name="accion" value="asignar">
-                                <input type="hidden" name="idusuario" value="<?= $u->getIdUsuario(); ?>">
-
-                                <select name="idrol" class="form-select" required>
-                                    <option value="">Seleccionar...</option>
-                                    <?php foreach ($roles as $r): ?>
-                                        <option value="<?= $r->getIdRol(); ?>">
-                                            <?= $r->getRoDescripcion(); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-
-                                <button class="btn btn-success">Asignar</button>
-                            </form>
-                        </td>
-
                     </tr>
                 <?php endforeach; ?>
-
                 </tbody>
+
             </table>
+        </div>
+    </div>
+
+    <!-- ================== ASIGNAR ROLES A USUARIOS ================== -->
+    <div class="card mb-5 shadow">
+        <div class="card-header bg-secondary text-white">Asignar rol a usuario</div>
+        <div class="card-body">
+
+            <form action="accion/asignarRol.php" method="POST" class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label">Usuario</label>
+                    <select name="idusuario" class="form-select" required>
+                        <?php foreach ($listaUsuarios as $u): ?>
+                            <option value="<?= $u->getIdUsuario(); ?>">
+                                <?= $u->getUsNombre(); ?> (<?= $u->getUsMail(); ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="col-md-5">
+                    <label class="form-label">Rol</label>
+                    <select name="idrol" class="form-select" required>
+                        <?php foreach ($listaRoles as $r): ?>
+                            <option value="<?= $r->getIdRol(); ?>"><?= $r->getRoDescripcion(); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-success w-100">
+                        <i class="fa fa-plus"></i> Asignar
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- ========= Modal de edición ========= -->
+<div class="modal fade" id="modalEditarRol" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <form action="accion/editarRol.php" method="POST">
+
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">Editar Rol</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="idrol" id="edit-idrol">
+                    <label class="form-label">Descripción</label>
+                    <input type="text" name="rodescripcion" id="edit-desc" class="form-control" required>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-success">
+                        <i class="fa fa-save"></i> Guardar cambios
+                    </button>
+                </div>
+
+            </form>
 
         </div>
     </div>
 </div>
 
-</body>
-</html>
+<script>
+function editarRol(id, desc) {
+    document.getElementById("edit-idrol").value = id;
+    document.getElementById("edit-desc").value = desc;
+    new bootstrap.Modal(document.getElementById('modalEditarRol')).show();
+}
+</script>
+
+<?php include_once dirname(__DIR__) . "/estructura/pie.php"; ?>
