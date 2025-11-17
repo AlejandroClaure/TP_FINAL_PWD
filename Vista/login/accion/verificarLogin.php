@@ -1,5 +1,5 @@
 <?php
-include_once '../../configuracion.php';
+include_once '../../../configuracion.php';
 
 // Creo la sesión
 $session = new Session();
@@ -12,12 +12,12 @@ $uspass   = $_POST['uspass'] ?? '';
 if ($session->iniciar($usnombre, $uspass)) {
 
     // Login correcto → redirige al menú seguro
-    header("Location: ../login/paginaSegura.php"); //dashboard
+    header("Location: ../paginaSegura.php");
     exit;
-    
+
 } else {
 
     // Login incorrecto
-    header("Location: ../login/login.php?error=1");
+    header("Location: ../login.php?error=1");
     exit;
 }

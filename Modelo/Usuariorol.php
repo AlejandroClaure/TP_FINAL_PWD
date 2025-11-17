@@ -139,10 +139,13 @@ class Usuariorol extends BaseDatos{
 
     public function obtenerRoles() {
     $roles = [];
+    $idUsuario = $this->getObjUsuario()->getIdUsuario();
+
     $sql = "SELECT r.rodescripcion 
             FROM usuariorol ur 
             INNER JOIN rol r ON ur.idrol = r.idrol 
-            WHERE ur.idusuario = " . $this->getIdUsuario();
+            WHERE ur.idusuario = " . $idUsuario;
+
     if ($this->Iniciar()) {
         $res = $this->Ejecutar($sql);
         if ($res > 0) {
@@ -153,6 +156,7 @@ class Usuariorol extends BaseDatos{
     }
     return $roles;
 }
+
 
 
 }

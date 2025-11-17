@@ -27,53 +27,35 @@ class Usuario extends BaseDatos {
         $this->setUsDeshabilitado($usdeshabilitado);
     }
 
- 
-    public function getIdUsuario() {
-        return $this->idusuario;
-    }
-    public function setIdUsuario($idusuario) {
-        $this->idusuario = $idusuario;
-    }
+    // ============================================================
+    // GETTERS Y SETTERS
+    // ============================================================
 
-    public function getUsNombre() {
-        return $this->usnombre;
-    }
-    public function setUsNombre($usnombre) {
-        $this->usnombre = $usnombre;
-    }
+    public function getIdUsuario() { return $this->idusuario; }
+    public function setIdUsuario($idusuario) { $this->idusuario = $idusuario; }
 
-    public function getUsPass() {
-        return $this->uspass;
-    }
-    public function setUsPass($uspass) {
-        $this->uspass = $uspass;
-    }
+    public function getUsNombre() { return $this->usnombre; }
+    public function setUsNombre($usnombre) { $this->usnombre = $usnombre; }
 
-    public function getUsMail() {
-        return $this->usmail;
-    }
-    public function setUsMail($usmail) {
-        $this->usmail = $usmail;
-    }
+    public function getUsPass() { return $this->uspass; }
+    public function setUsPass($uspass) { $this->uspass = $uspass; }
 
-    public function getUsDeshabilitado() {
-        return $this->usdeshabilitado;
-    }
-    public function setUsDeshabilitado($usdeshabilitado) {
-        $this->usdeshabilitado = $usdeshabilitado;
-    }
+    public function getUsMail() { return $this->usmail; }
+    public function setUsMail($usmail) { $this->usmail = $usmail; }
 
-    public function getMensajeOperacion() {
-        return $this->mensajeoperacion;
-    }
-    public function setMensajeOperacion($valor) {
-        $this->mensajeoperacion = $valor;
-    }
+    public function getUsDeshabilitado() { return $this->usdeshabilitado; }
+    public function setUsDeshabilitado($usdeshabilitado) { $this->usdeshabilitado = $usdeshabilitado; }
 
+    public function getMensajeOperacion() { return $this->mensajeoperacion; }
+    public function setMensajeOperacion($valor) { $this->mensajeoperacion = $valor; }
+
+    // ============================================================
+    // CARGAR UNO
+    // ============================================================
     public function cargar() {
         $resp = false;
         $sql = "SELECT * FROM usuario WHERE idusuario = " . $this->getIdUsuario();
-        
+
         if ($this->Iniciar()) {
             $res = $this->Ejecutar($sql);
 
@@ -94,10 +76,19 @@ class Usuario extends BaseDatos {
         return $resp;
     }
 
+    // ============================================================
+    // INSERTAR
+    // ============================================================
     public function insertar() {
         $resp = false;
+        
         $sql = "INSERT INTO usuario (usnombre, uspass, usmail, usdeshabilitado)
-                VALUES ('" . $this->getUsNombre() . "', '" . $this->getUsPass() . "', '" . $this->getUsMail() . "', " . $this->getUsDeshabilitado() . " );";
+                VALUES (
+                    '" . $this->getUsNombre() . "', 
+                    '" . $this->getUsPass() . "', 
+                    '" . $this->getUsMail() . "', 
+                    NULL
+                );";
 
         if ($this->Iniciar()) {
             if ($id = $this->Ejecutar($sql)) {
@@ -110,13 +101,16 @@ class Usuario extends BaseDatos {
         return $resp;
     }
 
+    // ============================================================
+    // MODIFICAR
+    // ============================================================
     public function modificar() {
         $resp = false;
         $sql = "UPDATE usuario SET 
                     usnombre='" . $this->getUsNombre() . "', 
                     uspass='" . $this->getUsPass() . "', 
                     usmail='" . $this->getUsMail() . "', 
-                    usdeshabilitado=" . $this->getUsDeshabilitado() . " 
+                    usdeshabilitado=" . ($this->getUsDeshabilitado() ? "'" . $this->getUsDeshabilitado() . "'" : "NULL") . "
                 WHERE idusuario=" . $this->getIdUsuario();
 
         if ($this->Iniciar()) {
@@ -129,6 +123,9 @@ class Usuario extends BaseDatos {
         return $resp;
     }
 
+    // ============================================================
+    // ELIMINAR
+    // ============================================================
     public function eliminar() {
         $resp = false;
         $sql = "DELETE FROM usuario WHERE idusuario=" . $this->getIdUsuario();
@@ -143,6 +140,9 @@ class Usuario extends BaseDatos {
         return $resp;
     }
 
+    // ============================================================
+    // LISTAR MUCHOS
+    // ============================================================
     public function listar($parametro = "") {
         $arreglo = [];
         $sql = "SELECT * FROM usuario ";
@@ -157,55 +157,62 @@ class Usuario extends BaseDatos {
             if ($res > 0) {
                 while ($row = $this->Registro()) {
                     $obj = new Usuario();
-                    $obj->setIdUsuario($row['idusuario']);
-                    $obj->cargar();
+                    $obj->setear(
+                        $row['idusuario'],
+                        $row['usnombre'],
+                        $row['uspass'],
+                        $row['usmail'],
+                        $row['usdeshabilitado']
+                    );
                     $arreglo[] = $obj;
                 }
             }
-        } else {
-            $this->setMensajeOperacion("Usuario->listar: " . $this->getError());
         }
-
         return $arreglo;
     }
 
+    // ============================================================
+    // BUSCAR (DEVUELVE ARRAY, NO BOOLEAN)
+    // ============================================================
     public function buscar($param) {
-    $resp = false;
+        $where = " true ";
 
-    $where = " true ";
-
-    if (isset($param['idusuario'])) {
-        $where .= " AND idusuario = " . $param['idusuario'];
-    }
-    if (isset($param['usnombre'])) {
-        $where .= " AND usnombre = '" . $param['usnombre'] . "'";
-    }
-    if (isset($param['usmail'])) {
-        $where .= " AND usmail = '" . $param['usmail'] . "'";
-    }
-
-    $sql = "SELECT * FROM usuario WHERE " . $where;
-
-    if ($this->Iniciar()) {
-        $res = $this->Ejecutar($sql);
-
-        if ($res > 0) {
-            $row = $this->Registro();
-            $this->setear(
-                $row['idusuario'],
-                $row['usnombre'],
-                $row['uspass'],
-                $row['usmail'],
-                $row['usdeshabilitado']
-            );
-            $resp = true;
+        if (isset($param['idusuario'])) {
+            $where .= " AND idusuario = " . $param['idusuario'];
         }
-    } else {
-        $this->setMensajeOperacion("Usuario->buscar: " . $this->getError());
-    }
+        if (isset($param['usnombre'])) {
+            $where .= " AND usnombre = '" . $param['usnombre'] . "'";
+        }
+        if (isset($param['usmail'])) {
+            $where .= " AND usmail = '" . $param['usmail'] . "'";
+        }
+        if (isset($param['uspass'])) {
+            $where .= " AND uspass = '" . $param['uspass'] . "'";
+        }
 
-    return $resp;
-}
+        $sql = "SELECT * FROM usuario WHERE " . $where;
+
+        $lista = [];
+
+        if ($this->Iniciar()) {
+            $res = $this->Ejecutar($sql);
+
+            if ($res > 0) {
+                while ($row = $this->Registro()) {
+                    $obj = new Usuario();
+                    $obj->setear(
+                        $row['idusuario'],
+                        $row['usnombre'],
+                        $row['uspass'],
+                        $row['usmail'],
+                        $row['usdeshabilitado']
+                    );
+                    $lista[] = $obj;
+                }
+            }
+        }
+        return $lista;
+    }
 
 }
 ?>

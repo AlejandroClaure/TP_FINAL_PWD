@@ -1,7 +1,9 @@
 <?php
-include_once "../configuracion.php";
+include_once '../../../configuracion.php';
 
-$sesion = new Session();
-$sesion->cerrar();
+$session = new Session();
+$session->cerrar();
 
-header("Location: ../Vista/login/login.php");
+// Volver al login
+header("Location: ../login.php?logout=1");
+exit;

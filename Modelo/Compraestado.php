@@ -1,212 +1,145 @@
 <?php
-class Compraestado extends BaseDatos{
 
-    //ver los diferentes estados de la compra y sus posibles contextos de cambio 
-    //hacer la extensión con la BD
+class CompraEstado extends BaseDatos {
 
     private $idcompraestado;
     private $objcompra;
-    private $objcompraestadotipo;
-    private $cefechaini; //CURRENT_TIMESTAMP
+    private $objtipo;
+    private $cefechaini;
     private $cefechafin;
     private $mensajeoperacion;
 
-    public function __construct(){
+    public function __construct() {
         parent::__construct();
-        $this->idcompraestado="";
-        $this->objcompra="";
-        $this->objcompraestadotipo="";
-        $this->cefechaini=date('Y-m-d H:i:s');
-        $this->cefechafin=null;
-        $this->mensajeoperacion="";
+        $this->idcompraestado = 0;
+        $this->objcompra = new Compra();
+        $this->objtipo = new CompraEstadoTipo();
+        $this->cefechaini = null;
+        $this->cefechafin = null;
+        $this->mensajeoperacion = "";
     }
 
-    public function setear($idcompraestado,$objcompra,$objcompraestadotipo,$cefechaini,$cefechafin){
-        $this->setID($idcompraestado);
-        $this->setObjCompra($objcompra);
-        $this->setObjCompraEstadoTipo($objcompraestadotipo);
-        $this->setCeFechaIni($cefechaini);
-        $this->setCeFechaFin($cefechafin);
+    public function setear($idcompraestado, $objcompra, $objtipo, $ini, $fin) {
+        $this->idcompraestado = $idcompraestado;
+        $this->objcompra = $objcompra;
+        $this->objtipo = $objtipo;
+        $this->cefechaini = $ini;
+        $this->cefechafin = $fin;
     }
 
-    public function setearSinID($objcompra,$objcompraestadotipo,$cefechaini,$cefechafin){
-        $this->setObjCompra($objcompra);
-        $this->setObjCompraEstadoTipo($objcompraestadotipo);
-        $this->setCeFechaIni($cefechaini);
-        $this->setCeFechaFin($cefechafin);
-    }
+    // GETTERS / SETTERS
 
+    public function getIdCompraEstado() { return $this->idcompraestado; }
+    public function getObjCompra() { return $this->objcompra; }
+    public function getObjTipo() { return $this->objtipo; }
+    public function getFechaIni() { return $this->cefechaini; }
+    public function getFechaFin() { return $this->cefechafin; }
 
-    public function getID(){
-        return $this->idcompraestado;
-    }
+    public function setIdCompraEstado($v) { $this->idcompraestado = $v; }
+    public function setObjCompra($v) { $this->objcompra = $v; }
+    public function setObjTipo($v) { $this->objtipo = $v; }
+    public function setFechaIni($v) { $this->cefechaini = $v; }
+    public function setFechaFin($v) { $this->cefechafin = $v; }
 
-    public function getObjCompra(){
-        return $this->objcompra;
-    }
+    // ===============================
+    // CARGAR
+    // ===============================
+    public function cargar() {
 
-    public function getObjCompraEstadoTipo(){
-        return $this->objcompraestadotipo;
-    }
+        $sql = "SELECT * FROM compraestado WHERE idcompraestado = " . $this->getIdCompraEstado();
 
-    public function getCeFechaIni(){
-        return $this->cefechaini;
-    }
-
-    public function getCeFechaFin(){
-        return $this->cefechafin;
-    }
-
-    public function getMensajeOperacion(){
-        return $this->mensajeoperacion;
-    }
-
-    public function setID($newId){
-        $this->idcompraestado=$newId;
-        return $this;
-    }
-    
-    public function setObjCompra($newObjCompra){
-        $this->objcompra=$newObjCompra;
-    
-    }
-    public function setObjCompraEstadoTipo($newObjCompraEstadoTipo){
-        $this->objcompraestadotipo=$newObjCompraEstadoTipo;
-       
-    }
-    public function setCeFechaIni($newCeFechaIni){
-        $this->cefechaini=$newCeFechaIni;
-    
-    }
-    public function setCeFechaFin($newCeFechaFin){
-        $this->cefechafin=$newCeFechaFin;
-      
-    }
-    public function setMensajeOperacion($newMensajeOperacion){
-        $this->mensajeoperacion=$newMensajeOperacion;
-    
-    }
-
-    public function cargar(){
-        $resp = false;
-        $sql="SELECT * FROM compraestado WHERE idcompraestado = ".$this->getID();
         if ($this->Iniciar()) {
+
             $res = $this->Ejecutar($sql);
-            if($res>-1){
-                if($res>0){
-                    $row = $this->Registro();
-                    $objcompra= new compra();
-                    $objcompraestadotipo= new compraEstadoTipo();
-                    
-                    $objcompra->setID($row['idcompra']);
-                    $objcompraestadotipo->setID($row['idcompraestadotipo']);
 
-                    $objcompra->cargar();
-                    $objcompraestadotipo->cargar();
+            if ($res > 0) {
+                $row = $this->Registro();
 
-                    $this->setear($row['idcompraestado'], $objcompra, $objcompraestadotipo,$row['cefechaini'], $row['cefechafin']);
-                }
-            }
-        } else {
-            $this->setMensajeOperacion("compraestado->listar: ".$this->getError());
-        }
-        return $resp;
-    }
-    
-    public function insertar(){
-        //Fecha ini poner fecha actual
-        //Setear fecha fin cuando el admin apruebe la compra (fecha)
-        $resp = false;
-        // Si lleva ID Autoincrement, la consulta SQL no lleva dicho ID
-        $sql="INSERT INTO compraestado(idcompra, idcompraestadotipo, cefechaini, cefechafin) 
-            VALUES('"
-            .$this->getObjCompra()->getID()."', '"
-            .$this->getObjCompraEstadoTipo()->getID()."', '"
-            .$this->getCeFechaIni()."', '"
-            .$this->getCeFechaFin()."'
-        );";
-        if ($this->Iniciar()) {
-            if ($esteid = $this->Ejecutar($sql)) {
-                // Si se usa ID autoincrement, descomentar lo siguiente:
-                $this->setID($esteid);
-                $resp = true;
-            } else {
-                $this->setMensajeOperacion("compraestado->insertar: ".$this->getError());
-            }
-        } else {
-            $this->setMensajeOperacion("compraestado->insertar: ".$this->getError());
-        }
-        return $resp;
-    }
-    
-    public function modificar(){
-        $resp = false;
-        $sql="UPDATE compraestado 
-        SET idcompra='".$this->getObjCompra()->getID()
-        ."', idcompraestadotipo='".$this->getObjCompraEstadoTipo()->getID()
-        ."', cefechaini='".$this->getCeFechaIni()
-        ."', cefechafin='".$this->getCeFechaFin()
-        ."' WHERE idcompraestado='".$this->getID()."'";
-        if ($this->Iniciar()) {
-            if ($this->Ejecutar($sql)) {
-                $resp = true;
-            } else {
-                $this->setMensajeOperacion("compraestado->modificar: ".$this->getError());
-            }
-        } else {
-            $this->setMensajeOperacion("compraestado->modificar: ".$this->getError());
-        }
-        return $resp;
-    }
-    
-    public function eliminar(){
-        $resp = false;
-        $sql="DELETE FROM compraestado WHERE idcompraestado=".$this->getID();
-        if ($this->Iniciar()) {
-            if ($this->Ejecutar($sql)) {
+                $compra = new Compra();
+                $compra->setIdCompra($row['idcompra']);
+                $compra->cargar();
+
+                $tipo = new CompraEstadoTipo();
+                $tipo->setIdCompraEstadoTipo($row['idcompraestadotipo']);
+                $tipo->cargar();
+
+                $this->setear(
+                    $row['idcompraestado'],
+                    $compra,
+                    $tipo,
+                    $row['cefechaini'],
+                    $row['cefechafin']
+                );
+
                 return true;
-            } else {
-                $this->setMensajeOperacion("compraestado->eliminar: ".$this->getError());
             }
-        } else {
-            $this->setMensajeOperacion("compraestado->eliminar: ".$this->getError());
         }
-        return $resp;
+
+        return false;
     }
-    
-    public function listar($parametro=""){
-        $arreglo = array();
-        $sql="SELECT * FROM compraestado ";
-        if ($parametro!="") {
-            $sql.='WHERE '.$parametro;
+
+    // ===============================
+    // INSERTAR
+    // ===============================
+    public function insertar() {
+        $sql = "INSERT INTO compraestado (idcompra, idcompraestadotipo)
+                VALUES (" .
+                $this->getObjCompra()->getIdCompra() . ", " .
+                $this->getObjTipo()->getIdCompraEstadoTipo() . "
+                );";
+
+        if ($this->Iniciar()) {
+            $id = $this->Ejecutar($sql);
+
+            if ($id > 0) {
+                $this->setIdCompraEstado($id);
+                return true;
+            }
         }
+        return false;
+    }
+
+    // ===============================
+    // LISTAR
+    // ===============================
+    public function listar($cond = "") {
+
+        $array = [];
+        $sql = "SELECT * FROM compraestado ";
+
+        if ($cond != "") $sql .= " WHERE " . $cond;
+
+        $sql .= " ORDER BY cefechaini DESC";
+
         $res = $this->Ejecutar($sql);
-        if($res>-1){
-            if($res>0){
-                while ($row = $this->Registro()){
-                    $obj= new compraEstado();
-                    $objCompra = new compra();
-                    $objCompraEstadoTipo= new compraEstadoTipo();
 
-                    $objCompra->setID($row['idcompra']);
-                    $objCompraEstadoTipo->setID($row['idcompraestadotipo']);
+        if ($res > 0) {
+            while ($row = $this->Registro()) {
 
-                    $objCompra->cargar();
-                    $objCompraEstadoTipo->cargar();
+                $compra = new Compra();
+                $compra->setIdCompra($row['idcompra']);
+                $compra->cargar();
 
-                    $obj->setear($row['idcompraestado'], $objCompra, 
-                    $objCompraEstadoTipo, $row['cefechaini'], $row['cefechafin']);
-                    array_push($arreglo, $obj);
-                }
+                $tipo = new CompraEstadoTipo();
+                $tipo->setIdCompraEstadoTipo($row['idcompraestadotipo']);
+                $tipo->cargar();
+
+                $obj = new CompraEstado();
+                $obj->setear(
+                    $row['idcompraestado'],
+                    $compra,
+                    $tipo,
+                    $row['cefechaini'],
+                    $row['cefechafin']
+                );
+
+                $array[] = $obj;
             }
-        } else {
-            $this->setMensajeOperacion("compraestado->listar: ".$this->getError());
         }
-    
-        return $arreglo;
-    }
-    
-}
 
+        return $array;
+    }
+
+}
 
 ?>
