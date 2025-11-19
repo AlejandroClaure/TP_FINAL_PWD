@@ -45,6 +45,8 @@ include_once dirname(__DIR__, 2) . '/estructura/cabecera.php';
 
     <?php if ($ok == 1): ?>
         <div class="alert alert-success">Operación realizada correctamente.</div>
+    <?php elseif($ok == 0): ?>
+        <div class="alert alert-danger">Ocurrió un error al realizar la operación.</div>
     <?php endif; ?>
 
     <?php if ($toggle == 1): ?>
@@ -152,16 +154,17 @@ include_once dirname(__DIR__, 2) . '/estructura/cabecera.php';
                 <div class="list-group">
                     <?php foreach ($padres as $p): ?>
                         <div class="list-group-item">
-                            <div class="d-flex justify-content-between">
+                            <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <strong><?= $p->getMeNombre(); ?></strong>
                                     <div class="small text-muted"><?= $p->getMeDescripcion(); ?></div>
                                 </div>
                                 <div class="btn-group">
                                     <a href="accion/toggleVisibilidad.php?idmenu=<?= $p->getIdMenu(); ?>" class="btn btn-sm btn-outline-info">
-                                        <?= $p->getMeDeshabilitado() == 1 ? "🚫" : "👁️" ?>
+                                        <?= $p->getMeDeshabilitado() ? "🚫" : "👁️" ?>
                                     </a>
-                                    <a href="editarMenu.php?idmenu=<?= $p->getIdMenu(); ?>" class="btn btn-sm btn-outline-warning">Editar</a>
+                                    <!-- EDITAR -->
+                                    <a href="<?= $GLOBALS['VISTA_URL']; ?>admin/menus/editarMenu.php?idmenu=<?= $p->getIdMenu(); ?>" class="btn btn-sm btn-outline-warning">Editar</a>
                                     <a href="accion/eliminarMenu.php?idmenu=<?= $p->getIdMenu(); ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar sección?');">Eliminar</a>
                                 </div>
                             </div>
@@ -169,13 +172,17 @@ include_once dirname(__DIR__, 2) . '/estructura/cabecera.php';
                             <?php if (isset($hijosMap[$p->getIdMenu()])): ?>
                                 <ul class="mt-2 ms-3">
                                     <?php foreach ($hijosMap[$p->getIdMenu()] as $h): ?>
-                                        <li class="d-flex justify-content-between">
-                                            <div><?= $h->getMeNombre(); ?><div class="small text-muted"><?= $h->getMeDescripcion(); ?></div></div>
+                                        <li class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <?= $h->getMeNombre(); ?>
+                                                <div class="small text-muted"><?= $h->getMeDescripcion(); ?></div>
+                                            </div>
                                             <div class="btn-group">
                                                 <a href="accion/toggleVisibilidad.php?idmenu=<?= $h->getIdMenu(); ?>" class="btn btn-sm btn-outline-info">
-                                                    <?= $h->getMeDeshabilitado() == 1 ? "🚫" : "👁️" ?>
+                                                    <?= $h->getMeDeshabilitado() ? "🚫" : "👁️" ?>
                                                 </a>
-                                                <a href="editarMenu.php?idmenu=<?= $h->getIdMenu(); ?>" class="btn btn-sm btn-outline-warning">Editar</a>
+                                                <!-- EDITAR -->
+                                                <a href="<?= $GLOBALS['VISTA_URL']; ?>admin/menus/editarMenu.php?idmenu=<?= $h->getIdMenu(); ?>" class="btn btn-sm btn-outline-warning">Editar</a>
                                                 <a href="accion/eliminarMenu.php?idmenu=<?= $h->getIdMenu(); ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar sub-sección?');">Eliminar</a>
                                             </div>
                                         </li>
@@ -188,7 +195,6 @@ include_once dirname(__DIR__, 2) . '/estructura/cabecera.php';
             <?php endif; ?>
         </div>
     </div>
-
 </div>
 
 <script>
