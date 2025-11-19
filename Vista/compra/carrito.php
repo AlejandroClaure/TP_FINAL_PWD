@@ -20,6 +20,41 @@ if (!isset($_SESSION['carrito'])) {
 $carrito =& $_SESSION['carrito'];
 
 // ==========================
+// Modificar cantidad si se recibe id y accion
+// ==========================
+if (isset($_GET['id']) && isset($_GET['accion'])) {
+    $idProducto = $_GET['id'];
+    $accion = $_GET['accion'];
+
+    // Obtener stock del producto
+    $abmProducto = new AbmProducto();
+    $producto = $abmProducto->buscarPorId($idProducto);
+    $stock = (int)$producto->getProCantStock();
+
+    if ($accion === 'sumar') {
+        if (!isset($carrito[$idProducto])) {
+            $carrito[$idProducto] = [
+                'nombre' => $producto->getProNombre(),
+                'precio' => (float)str_replace(['$', ','], '', $producto->getProDetalle()),
+                'cantidad' => 0
+            ];
+        }
+        if ($carrito[$idProducto]['cantidad'] < $stock) {
+            $carrito[$idProducto]['cantidad']++;
+        }
+    } elseif ($accion === 'restar') {
+        if (isset($carrito[$idProducto])) {
+            $carrito[$idProducto]['cantidad']--;
+            if ($carrito[$idProducto]['cantidad'] <= 0) {
+                unset($carrito[$idProducto]);
+            }
+        }
+    }
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+// ==========================
 // Eliminar producto si se recibe idEliminar
 // ==========================
 if (isset($_GET['eliminar'])) {
@@ -41,8 +76,8 @@ foreach ($carrito as $item) {
 
 $envio = $subtotal > 0 ? 5000 : 0; // ejemplo fijo de envío
 $total  = $subtotal + $envio;
-
 ?>
+
 <?php include_once '../estructura/cabecera.php'; ?>
 
 <main class="mt-5 pt-5">
@@ -65,10 +100,23 @@ $total  = $subtotal + $envio;
                     </thead>
                     <tbody>
                         <?php foreach ($carrito as $id => $item): ?>
+                            <?php
+                                // Obtener stock real
+                                $abmProducto = new AbmProducto();
+                                $productoObj = $abmProducto->buscarPorId($id);
+                                $stock = (int)$productoObj->getProCantStock();
+                            ?>
                             <tr>
                                 <td><?= htmlspecialchars($item['nombre']); ?></td>
                                 <td>$<?= number_format(floatval($item['precio']), 2, ',', '.'); ?></td>
-                                <td><?= intval($item['cantidad']); ?></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <a href="?id=<?= $id; ?>&accion=restar" class="btn btn-sm btn-secondary me-1">-</a>
+                                        <?= intval($item['cantidad']); ?>
+                                        <a href="?id=<?= $id; ?>&accion=sumar" class="btn btn-sm btn-secondary ms-1 <?= $item['cantidad'] >= $stock ? 'disabled' : ''; ?>">+</a>
+                                    </div>
+                                    <small class="text-muted">Stock: <?= $stock; ?></small>
+                                </td>
                                 <td>$<?= number_format(floatval($item['precio']) * intval($item['cantidad']), 2, ',', '.'); ?></td>
                                 <td>
                                     <a href="?eliminar=<?= $id; ?>" class="btn btn-danger btn-sm">Eliminar</a>

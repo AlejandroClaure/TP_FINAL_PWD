@@ -17,7 +17,6 @@ $productos = $abmProducto->listar();
 
 $imgBaseUrl = $GLOBALS['IMG_URL'] ?? '/PWD_TPFinal/Vista/imagenes/';
 $imgDir     = dirname(__DIR__) . '/imagenes/'; 
-
 ?>
 
 <div class="row g-4">
@@ -26,23 +25,30 @@ $imgDir     = dirname(__DIR__) . '/imagenes/';
 <?php else: ?>
     <?php foreach ($productos as $prod): ?>
         <?php
-        // Nombre visible después del último "_"
-        $partes = explode('_', $prod->getProNombre());
-        $nombreVisible = end($partes);
+        // Nombre completo del producto en BD: celulares_iphone_NombreProducto
+        $nombreCompleto = $prod->getProNombre();
+        $partes = explode('_', $nombreCompleto);
+        
+        // Nombre real del producto (último segmento)
+        $nombreProductoReal = end($partes);
+        $nombreProductoReal = str_replace(' ', '_', $nombreProductoReal);
 
-        // Imagen
-        $baseName = str_replace(' ', '_', $prod->getProNombre());
-        if (file_exists($imgDir . $baseName . '.jpg')) {
-            $imagenURL = $imgBaseUrl . $baseName . '.jpg';
-        } elseif (file_exists($imgDir . $baseName . '.jpeg')) {
-            $imagenURL = $imgBaseUrl . $baseName . '.jpeg';
-        } else {
-            $imagenURL = $imgBaseUrl . 'no-image.jpeg';
+        // Buscar imagen en varios formatos
+        $extensiones = ['jpg', 'jpeg', 'png', 'webp'];
+        $imagenURL = $imgBaseUrl . 'no-image.jpeg'; // default
+
+        foreach ($extensiones as $ext) {
+            if (file_exists($imgDir . $nombreProductoReal . '.' . $ext)) {
+                $imagenURL = $imgBaseUrl . $nombreProductoReal . '.' . $ext;
+                break;
+            }
         }
 
+        // Nombre visible
+        $nombreVisible = $nombreProductoReal;
+
         // Precio como float
-        $precio = $prod->getProDetalle();
-        $precio = str_replace(['$', ','], '', $precio); // quitar $ y comas
+        $precio = str_replace(['$', ','], '', $prod->getProDetalle());
         $precio = (float)$precio;
 
         // Stock
