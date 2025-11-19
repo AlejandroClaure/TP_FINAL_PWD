@@ -1,53 +1,50 @@
 <?php
-include_once dirname(__DIR__, 2) . '/estructura/cabecera.php';
-include_once dirname(__DIR__, 3) . '/Control/AbmProducto.php';
+include_once __DIR__ . '/../estructura/cabecera.php';
+include_once __DIR__ . '/../../Control/AbmProducto.php';
+include_once __DIR__ . '/../../Control/AbmMenu.php';
 
 $abmProducto = new AbmProducto();
+$abmMenu = new AbmMenu();
+
+// Obtener productos
+$todos = $abmProducto->listar();
 $productos = [];
 
-// Obtener todos los productos
-$allProductos = $abmProducto->listar();
+// celulares.php es reemplazado dinámicamente al generar el archivo (ej: "celulares/iphone.php" o "celulares.php")
+$generadaRuta = 'celulares.php';
 
-// Filtrado por primera palabra
-foreach ($allProductos as $prod) {
-    $firstWord = explode(' ', trim($prod->getProNombre()))[0];
-    if ($firstWord === 'Celulares') {
-        $productos[] = $prod;
-    }
-}
+// Convertir ruta de archivo a prefijo de categoría: quitar extensión y transformar "/" por "_", y añadir "_" final
+$prefijoCategoria = strtolower(str_replace('.php', '', $generadaRuta));
+$prefijoCategoria = str_replace('/', '_', $prefijoCategoria) . '_';
 
-// Para categorías principales, agregar también productos de subcategorías
-if ('raiz' === 'raiz') {
-    // Buscar subcategorías del menú padre
-    include_once dirname(__DIR__, 3) . '/Control/AbmMenu.php';
-    $abmMenu = new AbmMenu();
-    $hijos = $abmMenu->buscar(['idpadre' =>  ?? null]);
-    foreach ($hijos as $h) {
-        foreach ($allProductos as $prod) {
-            $firstWord = explode(' ', trim($prod->getProNombre()))[0];
-            if ($firstWord === $h->getMeNombre()) {
-                $productos[] = $prod;
-            }
-        }
+// Filtrar productos que empiecen con el prefijo completo (case-insensitive)
+foreach ($todos as $p) {
+    $nombreProducto = strtolower($p->getProNombre());
+    if (str_starts_with($nombreProducto, $prefijoCategoria)) {
+        $productos[] = $p;
     }
 }
 ?>
-
 <div class="container mt-4 pt-4">
-    <h1 class="mb-4">Celulares</h1>
+    <h1 class="mb-4">Celularess</h1>
     <div class="row g-3">
         <?php if (empty($productos)): ?>
             <p class="text-muted">No hay productos cargados en esta sección.</p>
         <?php else: ?>
             <?php foreach ($productos as $prod): ?>
+                <?php
+                // Mostrar solo lo que está después del último "_" (nombre visible)
+                $partes = explode('_', $prod->getProNombre());
+                $nombreVisible = end($partes);
+                ?>
                 <div class="col-md-4">
                     <div class="card shadow-sm">
                         <img src="<?= $GLOBALS['IMG_URL']; ?>productos/<?= $prod->getProNombre(); ?>.jpg"
                              class="card-img-top"
-                             alt="<?= $prod->getProNombre(); ?>">
+                             alt="<?= htmlspecialchars($nombreVisible, ENT_QUOTES); ?>">
                         <div class="card-body">
-                            <h5><?= $prod->getProNombre(); ?></h5>
-                            <p class="text-success fs-4 fw-bold">$<?= $prod->getProDetalle(); ?></p>
+                            <h5><?= htmlspecialchars($nombreVisible); ?></h5>
+                            <p class="text-success fs-4 fw-bold">$<?= htmlspecialchars($prod->getProDetalle()); ?></p>
                             <a href="<?= $GLOBALS['VISTA_URL']; ?>compra/accion/agregarCarrito.php?id=<?= $prod->getIdProducto(); ?>"
                                class="btn btn-warning w-100">
                                <i class="fa fa-shopping-cart"></i> Agregar al carrito
@@ -60,4 +57,4 @@ if ('raiz' === 'raiz') {
     </div>
 </div>
 
-<?php include_once dirname(__DIR__, 2) . '/estructura/pie.php'; ?>
+<?php include_once __DIR__ . '/../estructura/pie.php'; ?>

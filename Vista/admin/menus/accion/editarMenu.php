@@ -47,6 +47,20 @@ if (file_exists($rutaActual)) {
     $dirNueva = dirname($rutaNuevaFull);
     if (!is_dir($dirNueva)) mkdir($dirNueva, 0777, true);
     rename($rutaActual, $rutaNuevaFull);
+
+    // ============================
+    // ACTUALIZAR TÍTULO EN EL ARCHIVO
+    // ============================
+    $contenidoArchivo = file_get_contents($rutaNuevaFull);
+
+    // Reemplazar el <h1> existente con el nuevo nombre
+    $contenidoArchivo = preg_replace(
+        '/<h1 class="mb-4">.*?<\/h1>/',
+        '<h1 class="mb-4">' . htmlspecialchars($menombre, ENT_QUOTES) . '</h1>',
+        $contenidoArchivo
+    );
+
+    file_put_contents($rutaNuevaFull, $contenidoArchivo);
 }
 
 // Evitar que un menú sea su propio padre
@@ -76,6 +90,15 @@ foreach ($hijos as $hijo) {
         $dirNuevaHijo = dirname($rutaHijoNuevaFull);
         if (!is_dir($dirNuevaHijo)) mkdir($dirNuevaHijo, 0777, true);
         rename($rutaHijoActual, $rutaHijoNuevaFull);
+
+        // Actualizar título de submenú también
+        $contenidoHijo = file_get_contents($rutaHijoNuevaFull);
+        $contenidoHijo = preg_replace(
+            '/<h1 class="mb-4">.*?<\/h1>/',
+            '<h1 class="mb-4">' . htmlspecialchars($hijo->getMeNombre(), ENT_QUOTES) . '</h1>',
+            $contenidoHijo
+        );
+        file_put_contents($rutaHijoNuevaFull, $contenidoHijo);
     }
 
     $abmMenu->modificacion([
