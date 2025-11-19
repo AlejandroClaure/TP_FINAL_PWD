@@ -77,4 +77,22 @@ class Venta {
         }
         return $items;
     }
+
+   public function descontarStock($idproducto, $cantidad) {
+    // Buscar el stock actual
+    $sql = "SELECT procantstock FROM producto WHERE idproducto = $idproducto";
+    $res = $this->db->Ejecutar($sql);
+    if ($res > 0) {
+        $row = $this->db->Registro();
+        $stockActual = (int)$row['procantstock'];
+        $nuevoStock = max(0, $stockActual - $cantidad);
+
+        // Actualizar stock
+        $sqlUpd = "UPDATE producto SET procantstock = $nuevoStock WHERE idproducto = $idproducto";
+        return $this->db->Ejecutar($sqlUpd);
+    }
+    return false;
+}
+
+
 }

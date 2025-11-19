@@ -1,5 +1,9 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 require_once '../../configuracion.php';
+require_once '../../Modelo/Venta.php';
 
 $session = new Session();
 if (!$session->activa()) {
@@ -7,70 +11,62 @@ if (!$session->activa()) {
     exit;
 }
 
-// ================================
-// OBTENER EL ID DE LA COMPRA
-// ================================
-$idventa = $_GET['id'] ?? $_GET['idventa'] ?? null;
-
-if (!$idventa) {
+// Validar ID de compra recibido por GET
+if (!isset($_GET['id']) || empty($_GET['id'])) {
     echo "Error: No se encontró el número de operación.";
     exit;
 }
 
-// ================================
-// OBTENER DATOS DEL USUARIO
-// ================================
-$usuario = $session->getUsuario();
-$nombreUsuario = $usuario ? $usuario->getUsNombre() : "Cliente";
+$idventa = intval($_GET['id']);
 
-// ================================
-// CABECERA
-// ================================
+// Incluir cabecera
 include_once '../estructura/cabecera.php';
+
+// Ruta al PDF generado
+$rutaPDF = "../../Archivos/ventas/ticket_$idventa.pdf";
+
+// Traer datos de compra
+$venta = new Venta();
+$usuario = $session->getUsuario();
 ?>
 
 <div class="container mt-5 mb-5">
 
-    <div class="card p-4 shadow-lg">
+    <h2 class="text-success">✔ ¡Compra realizada con éxito!</h2>
 
-        <h1 class="text-success text-center mb-4">
-            ✔ ¡Compra realizada con éxito!
-        </h1>
+    <p class="lead">
+        Gracias por tu compra, <b><?= htmlspecialchars($usuario->getUsNombre()); ?></b>.
+    </p>
 
-        <p class="text-center fs-5">
-            Gracias por tu compra, <b><?= htmlspecialchars($nombreUsuario) ?></b>.
-        </p>
+    <p>
+        Tu número de operación es: <b><?= $idventa ?></b>
+    </p>
 
-        <p class="text-center fs-4">
-            Tu número de operación es:
-        </p>
+    <hr>
 
-        <h2 class="text-center display-5">
-            <?= htmlspecialchars($idventa) ?>
-        </h2>
-
-        <div class="text-center mt-4">
-            <a
-                class="btn btn-primary btn-lg"
-                target="_blank"
-                href="<?= $GLOBALS['VISTA_URL'] ?>compra/comprobante.php?idventa=<?= urlencode($idventa) ?>">
-                📄 Ver Comprobante en PDF
-            </a>
-
-            <a
-                class="btn btn-secondary btn-lg ms-2"
-                href="<?= $GLOBALS['BASE_URL'] ?>index.php">
-                Volver al inicio
-            </a>
+    <?php if (file_exists($rutaPDF)) : ?>
+        <a 
+            class="btn btn-primary btn-lg mt-3"
+            href="<?= $GLOBALS['BASE_URL'] ?>Archivos/ventas/ticket_<?= $idventa ?>.pdf"
+            target="_blank"
+        >
+            📄 Descargar Comprobante PDF
+        </a>
+    <?php else : ?>
+        <div class="alert alert-danger">
+            ❌ El comprobante no se encontró en el servidor.
         </div>
+    <?php endif; ?>
 
-    </div>
+    <br><br>
+
+    <a 
+        class="btn btn-secondary btn-lg"
+        href="<?= $GLOBALS['BASE_URL'] ?>index.php"
+    >
+        Volver al inicio
+    </a>
 
 </div>
 
-<?php
-// ================================
-// PIE
-// ================================
-include_once '../estructura/pie.php';
-?>
+<?php include_once '../estructura/pie.php'; ?>

@@ -4,9 +4,7 @@ error_reporting(E_ALL);
 
 require_once '../../configuracion.php';
 require_once '../../Modelo/Venta.php';
-
-// Cargar Autoload de Composer (DOMPDF + PHPMailer)
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php'; // DOMPDF + PHPMailer
 
 use Dompdf\Dompdf;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -20,40 +18,52 @@ if (!$session->activa()) {
 // ==============================
 // 1 - DATOS DE USUARIO
 // ==============================
-$usuario = $session->getUsuario();
+$usuario   = $session->getUsuario();
 $idusuario = $usuario->getIdUsuario();
 
 // ==============================
-// 2 - CREAR LA COMPRA
-// ==============================
-$venta = new Venta();
-$idcompra = $venta->nuevaCompra($idusuario);
-
-// ==============================
-// 3 - AGREGAR ITEMS DEL CARRITO
+// 2 - VALIDAR CARRITO
 // ==============================
 if (!isset($_SESSION['carrito']) || count($_SESSION['carrito']) == 0) {
     echo "No hay productos en el carrito.";
     exit;
 }
 
+// ==============================
+// 3 - CREAR LA COMPRA
+// ==============================
+$venta = new Venta();
+$idcompra = $venta->nuevaCompra($idusuario);
+
+// ==============================
+// 4 - AGREGAR ITEMS Y DESCONTAR STOCK
+// ==============================
+$bd = new BaseDatos();
+
 foreach ($_SESSION['carrito'] as $item) {
-    $venta->agregarItem($idcompra, $item['idproducto'], $item['cantidad']);
+    $idProducto = $item['idproducto'];
+    $cantidad   = $item['cantidad'];
+
+    // Insertar línea de compra
+    $venta->agregarItem($idcompra, $idProducto, $cantidad);
+
+    // Descontar stock
+    $sqlUpdate = "UPDATE producto SET proCantStock = proCantStock - $cantidad WHERE idproducto = $idProducto";
+    $bd->Ejecutar($sqlUpdate);
 }
 
-// Cambiar estado a iniciada (1)
+// Cambiar estado compra a iniciada (1)
 $venta->setEstado($idcompra, 1);
 
 // ==============================
-// 4 - TRAER DATOS PARA EL PDF
+// 5 - TRAER DATOS PARA EL PDF
 // ==============================
 $compra = $venta->getCompra($idcompra);
 $items  = $venta->getItems($idcompra);
-
-$fecha = date("d/m/Y H:i");
+$fecha  = date("d/m/Y H:i");
 
 // ==============================
-// 5 - GENERAR PDF DOMPDF
+// 6 - GENERAR PDF
 // ==============================
 $html = "
 <h2 style='text-align:center;'>Ticket de Compra Nº $idcompra</h2>
@@ -92,50 +102,47 @@ if (!file_exists($rutaCarpeta)) {
 }
 
 $rutaPDF = "$rutaCarpeta/ticket_$idcompra.pdf";
-
-// Guardar PDF
 file_put_contents($rutaPDF, $dompdf->output());
 
 // ==============================
-// 6 - ENVIAR POR MAIL
+// 7 - ENVIAR CORREO CON PDF
 // ==============================
 $mail = new PHPMailer(true);
 
 try {
-    
     $mail->isSMTP();
     $mail->Host       = "smtp.gmail.com";
     $mail->SMTPAuth   = true;
-    $mail->Username   = "alejandro.claure@est.fi.uncoma.edu.ar";
-    $mail->Password   = "bblz pabp xvew gbjb"; 
+    $mail->Username   = "alejandro.claure@est.fi.uncoma.edu.ar"; // tu mail
+    $mail->Password   = "bblz pabp xvew gbjb";                     // contraseña de app
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port       = 587;
 
-    $mail->setFrom("tu_correo@gmail.com", "Tienda Online");
+    $mail->setFrom("alejandro.claure@est.fi.uncoma.edu.ar", "Tienda Online");
     $mail->addAddress($compra['usmail'], $compra['usnombre']);
     $mail->addAttachment($rutaPDF);
 
     $mail->isHTML(true);
     $mail->Subject = "Confirmación de compra Nº $idcompra";
     $mail->Body = "
-    Hola {$compra['usnombre']}<br><br>
-    Tu compra fue registrada correctamente.<br>
-    Adjuntamos tu ticket en PDF.<br><br>
-    <b>Tienda Online</b>";
+        Hola {$compra['usnombre']}<br><br>
+        Tu compra fue registrada correctamente.<br>
+        Adjuntamos tu ticket en PDF.<br><br>
+        <b>Gracias por tu compra.</b>
+    ";
 
     $mail->send();
-
 } catch (Exception $e) {
-    file_put_contents("mail_error_log.txt", "Error: " . $mail->ErrorInfo);
+    file_put_contents("mail_error_log.txt", "Error al enviar mail: " . $mail->ErrorInfo);
 }
 
 // ==============================
-// 7 - LIMPIAR CARRITO
+// 8 - LIMPIAR CARRITO
 // ==============================
 unset($_SESSION['carrito']);
 
 // ==============================
-// 8 - REDIRECCIÓN
+// 9 - REDIRECCIÓN
 // ==============================
 header("Location: compra_exitosa.php?id=$idcompra");
 exit;
