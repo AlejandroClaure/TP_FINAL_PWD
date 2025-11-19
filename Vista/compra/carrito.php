@@ -20,18 +20,18 @@ if (!isset($_SESSION['carrito'])) {
 $carrito =& $_SESSION['carrito'];
 
 // ==========================
-// Modificar cantidad si se recibe id y accion
+// Modificar cantidad
 // ==========================
 if (isset($_GET['id']) && isset($_GET['accion'])) {
     $idProducto = $_GET['id'];
     $accion = $_GET['accion'];
 
-    // Obtener stock del producto
     $abmProducto = new AbmProducto();
     $producto = $abmProducto->buscarPorId($idProducto);
     $stock = (int)$producto->getProCantStock();
 
     if ($accion === 'sumar') {
+
         if (!isset($carrito[$idProducto])) {
             $carrito[$idProducto] = [
                 'nombre' => $producto->getProNombre(),
@@ -39,23 +39,28 @@ if (isset($_GET['id']) && isset($_GET['accion'])) {
                 'cantidad' => 0
             ];
         }
+
         if ($carrito[$idProducto]['cantidad'] < $stock) {
             $carrito[$idProducto]['cantidad']++;
         }
+
     } elseif ($accion === 'restar') {
+
         if (isset($carrito[$idProducto])) {
             $carrito[$idProducto]['cantidad']--;
+
             if ($carrito[$idProducto]['cantidad'] <= 0) {
                 unset($carrito[$idProducto]);
             }
         }
     }
+
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
 
 // ==========================
-// Eliminar producto si se recibe idEliminar
+// Eliminar producto
 // ==========================
 if (isset($_GET['eliminar'])) {
     $idEliminar = $_GET['eliminar'];
@@ -67,15 +72,15 @@ if (isset($_GET['eliminar'])) {
 }
 
 // ==========================
-// Calcular totales
+// Totales
 // ==========================
 $subtotal = 0;
 foreach ($carrito as $item) {
     $subtotal += floatval($item['precio']) * intval($item['cantidad']);
 }
 
-$envio = $subtotal > 0 ? 5000 : 0; // ejemplo fijo de envío
-$total  = $subtotal + $envio;
+$envio = $subtotal > 0 ? 5000 : 0;
+$total = $subtotal + $envio;
 ?>
 
 <?php include_once '../estructura/cabecera.php'; ?>
@@ -101,7 +106,7 @@ $total  = $subtotal + $envio;
                     <tbody>
                         <?php foreach ($carrito as $id => $item): ?>
                             <?php
-                                // Obtener stock real
+                                // Obtener stock actualizado
                                 $abmProducto = new AbmProducto();
                                 $productoObj = $abmProducto->buscarPorId($id);
                                 $stock = (int)$productoObj->getProCantStock();
@@ -113,11 +118,16 @@ $total  = $subtotal + $envio;
                                     <div class="d-flex align-items-center">
                                         <a href="?id=<?= $id; ?>&accion=restar" class="btn btn-sm btn-secondary me-1">-</a>
                                         <?= intval($item['cantidad']); ?>
-                                        <a href="?id=<?= $id; ?>&accion=sumar" class="btn btn-sm btn-secondary ms-1 <?= $item['cantidad'] >= $stock ? 'disabled' : ''; ?>">+</a>
+                                        <a href="?id=<?= $id; ?>&accion=sumar" 
+                                           class="btn btn-sm btn-secondary ms-1 <?= $item['cantidad'] >= $stock ? 'disabled' : ''; ?>">
+                                           +
+                                        </a>
                                     </div>
                                     <small class="text-muted">Stock: <?= $stock; ?></small>
                                 </td>
-                                <td>$<?= number_format(floatval($item['precio']) * intval($item['cantidad']), 2, ',', '.'); ?></td>
+                                <td>
+                                    $<?= number_format(floatval($item['precio']) * intval($item['cantidad']), 2, ',', '.'); ?>
+                                </td>
                                 <td>
                                     <a href="?eliminar=<?= $id; ?>" class="btn btn-danger btn-sm">Eliminar</a>
                                 </td>
@@ -131,7 +141,12 @@ $total  = $subtotal + $envio;
                 <p><strong>Subtotal:</strong> $<?= number_format($subtotal, 2, ',', '.'); ?></p>
                 <p><strong>Envío:</strong> $<?= number_format($envio, 2, ',', '.'); ?></p>
                 <p class="fs-4"><strong>Total:</strong> $<?= number_format($total, 2, ',', '.'); ?></p>
-                <a href="#" class="btn btn-success btn-lg">Proceder al Checkout</a>
+
+                <!-- 🔥 NUEVO: Finalizar compra directo -->
+                <a href="../compra/finalizarCompra.php" class="btn btn-success btn-lg">
+                    Finalizar Compra
+                </a>
+
             </div>
         <?php endif; ?>
     </div>
