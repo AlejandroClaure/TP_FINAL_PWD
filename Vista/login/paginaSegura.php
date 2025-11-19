@@ -66,7 +66,7 @@ include_once "../estructura/cabecera.php";
                     <div class="card-body">
                         <h5 class="card-title">Catálogo</h5>
                         <p class="card-text">Explorá los productos disponibles.</p>
-                        <a href="../producto/listarMisProductos.php" class="btn btn-info w-100">Ver catálogo</a>
+                        <a href="../producto/producto.php" class="btn btn-info w-100">Ver catálogo</a>
                     </div>
                 </div>
             </div>
