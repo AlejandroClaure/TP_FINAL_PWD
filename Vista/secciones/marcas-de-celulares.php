@@ -1,40 +1,29 @@
 <?php
-include_once dirname(__DIR__, 2) . '/estructura/cabecera.php';
-include_once dirname(__DIR__, 3) . '/Control/AbmProducto.php';
+include_once __DIR__ . '/../estructura/cabecera.php';
+include_once __DIR__ . '/../../Control/AbmProducto.php';
+include_once __DIR__ . '/../../Control/AbmMenu.php';
 
 $abmProducto = new AbmProducto();
 $productos = [];
-
-// Obtener todos los productos
 $allProductos = $abmProducto->listar();
 
 // Filtrado por primera palabra
 foreach ($allProductos as $prod) {
     $firstWord = explode(' ', trim($prod->getProNombre()))[0];
-    if ($firstWord === 'Celulares') {
+    if ($firstWord === 'Marcas de Celulares') {
         $productos[] = $prod;
     }
 }
 
-// Para categorías principales, agregar también productos de subcategorías
+// Para categorías principales, agregar productos de subcategorías
 if ('raiz' === 'raiz') {
-    // Buscar subcategorías del menú padre
-    include_once dirname(__DIR__, 3) . '/Control/AbmMenu.php';
     $abmMenu = new AbmMenu();
-    $hijos = $abmMenu->buscar(['idpadre' =>  ?? null]);
-    foreach ($hijos as $h) {
-        foreach ($allProductos as $prod) {
-            $firstWord = explode(' ', trim($prod->getProNombre()))[0];
-            if ($firstWord === $h->getMeNombre()) {
-                $productos[] = $prod;
-            }
-        }
-    }
+    // Se asignará  después de insertar en BD
+    $hijos = [];
 }
 ?>
-
 <div class="container mt-4 pt-4">
-    <h1 class="mb-4">Celulares</h1>
+    <h1 class="mb-4">Marcas de Celulares</h1>
     <div class="row g-3">
         <?php if (empty($productos)): ?>
             <p class="text-muted">No hay productos cargados en esta sección.</p>
@@ -60,4 +49,4 @@ if ('raiz' === 'raiz') {
     </div>
 </div>
 
-<?php include_once dirname(__DIR__, 2) . '/estructura/pie.php'; ?>
+<?php include_once __DIR__ . '/../estructura/pie.php'; ?>

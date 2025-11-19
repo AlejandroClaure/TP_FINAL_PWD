@@ -23,6 +23,13 @@ $slug = trim($slug, "-");
 // Ruta física de secciones
 $carpetaSecciones = $GLOBALS['VISTA_PATH'] . "secciones/";
 
+// Obtener menú actual
+$menu = $abmMenu->buscar(['idmenu' => $idmenu])[0] ?? null;
+if (!$menu) {
+    header("Location: ../../menus/gestionMenus.php?ok=0");
+    exit;
+}
+
 // Determinar nueva ruta del archivo
 if ($tipo === "raiz") {
     $nuevaRuta = $slug . ".php";
@@ -30,13 +37,6 @@ if ($tipo === "raiz") {
     $padre = $abmMenu->buscar(['idmenu' => $idPadre])[0] ?? null;
     $padreSlug = $padre ? strtolower(str_replace(".php", "", $padre->getMeDescripcion())) : '';
     $nuevaRuta = $padreSlug . "/" . $slug . ".php";
-}
-
-// Obtener menú actual
-$menu = $abmMenu->buscar(['idmenu' => $idmenu])[0] ?? null;
-if (!$menu) {
-    header("Location: ../../menus/gestionMenus.php?ok=0");
-    exit;
 }
 
 // Renombrar archivo físico si existe
@@ -62,7 +62,7 @@ $datos = [
 
 $abmMenu->modificacion($datos);
 
-// Actualizar rutas de submenús si es padre
+// Actualizar rutas de submenús si es menú padre
 $hijos = $abmMenu->buscar(['idpadre' => $idmenu]);
 foreach ($hijos as $hijo) {
     $hSlug = strtolower(trim($hijo->getMeNombre()));
