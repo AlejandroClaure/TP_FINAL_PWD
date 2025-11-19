@@ -1,14 +1,18 @@
 <?php
 
-class AbmUsuario {
+class AbmUsuario
+{
 
     /** CARGAR OBJETO SIN CLAVE (ALTA) */
-    private function cargarObjetoSinClave($param){
+    private function cargarObjetoSinClave($param)
+    {
         $obj = null;
 
-        if( isset($param['usnombre']) &&
+        if (
+            isset($param['usnombre']) &&
             isset($param['uspass']) &&
-            isset($param['usmail']) ) {
+            isset($param['usmail'])
+        ) {
 
             $hash = password_hash($param['uspass'], PASSWORD_DEFAULT);
 
@@ -25,12 +29,15 @@ class AbmUsuario {
     }
 
     /** CARGAR OBJETO CON CLAVE (MODIFICAR) */
-    private function cargarObjeto($param){
+    private function cargarObjeto($param)
+    {
         $obj = null;
 
-        if( isset($param['idusuario']) &&
+        if (
+            isset($param['idusuario']) &&
             isset($param['usnombre']) &&
-            isset($param['usmail']) ) {
+            isset($param['usmail'])
+        ) {
 
             $obj = new Usuario();
 
@@ -57,12 +64,14 @@ class AbmUsuario {
         return $obj;
     }
 
-    private function seteadosCamposClaves($param){
+    private function seteadosCamposClaves($param)
+    {
         return isset($param['idusuario']);
     }
 
     /** ALTA DESDE PANEL ADMIN */
-    public function alta($param){
+    public function alta($param)
+    {
         $resp = false;
         $obj = $this->cargarObjetoSinClave($param);
 
@@ -73,12 +82,14 @@ class AbmUsuario {
     }
 
     /** REGISTRAR DESDE FORMULARIO PÚBLICO */
-    public function registrar($param){
+    public function registrar($param)
+    {
         return $this->alta($param);
     }
 
     /** BAJA */
-    public function baja($param){
+    public function baja($param)
+    {
         $resp = false;
 
         if ($this->seteadosCamposClaves($param)) {
@@ -93,7 +104,8 @@ class AbmUsuario {
     }
 
     /** MODIFICACION */
-    public function modificacion($param){
+    public function modificacion($param)
+    {
         $resp = false;
 
         if ($this->seteadosCamposClaves($param)) {
@@ -108,19 +120,17 @@ class AbmUsuario {
     }
 
     /** BUSCAR */
-    public function buscar($param){
+    public function buscar($param)
+    {
         $where = " true ";
 
-        if ($param != null){
-
+        if ($param != null) {
             if (isset($param['idusuario']))
-                $where .= " AND idusuario = " . $param['idusuario'];
-
+                $where .= " AND idusuario = " . (int)$param['idusuario'];
             if (isset($param['usnombre']))
-                $where .= " AND usnombre LIKE '%" . $param['usnombre'] . "%'";
-
+                $where .= " AND usnombre = '" . $param['usnombre'] . "'";
             if (isset($param['usmail']))
-                $where .= " AND usmail LIKE '%" . $param['usmail'] . "%'";
+                $where .= " AND usmail = '" . $param['usmail'] . "'";
         }
 
         $obj = new Usuario();

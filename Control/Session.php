@@ -24,7 +24,7 @@ class Session
 
                 // Cargar roles como array de datos para sesión
                 $this->usuario->cargarRoles();
-                $_SESSION['roles'] = array_map(function($rol) {
+                $_SESSION['roles'] = array_map(function ($rol) {
                     return $rol->getRoDescripcion();
                 }, $this->usuario->getRoles());
             }
@@ -39,24 +39,25 @@ class Session
         $abmUsuario = new AbmUsuario();
         $usuarios = $abmUsuario->buscar(['usnombre' => $nombreUsuario]);
 
-        if (!empty($usuarios)) {
-            $usuario = $usuarios[0];
-
-            if (password_verify($psw, $usuario->getUsPass())) {
-                $_SESSION['idusuario'] = $usuario->getIdUsuario();
-                $this->usuario = $usuario;
-
-                // Cargar roles y guardar solo descripciones en sesión (string)
-                $usuario->cargarRoles();
-                $_SESSION['roles'] = array_map(function($rol) {
-                    return $rol->getRoDescripcion();
-                }, $usuario->getRoles());
-
-                return true;
-            }
+        if (count($usuarios) !== 1) {
+            return false; // evita duplicados o inexistentes
         }
-        return false;
+
+        $usuario = $usuarios[0];
+
+        if (!password_verify($psw, $usuario->getUsPass())) {
+            return false;
+        }
+
+        $_SESSION['idusuario'] = $usuario->getIdUsuario();
+        $this->usuario = $usuario;
+
+        $usuario->cargarRoles();
+        $_SESSION['roles'] = array_map(fn($rol) => $rol->getRoDescripcion(), $usuario->getRoles());
+
+        return true;
     }
+
 
     /**
      * Valida si la sesión está activa

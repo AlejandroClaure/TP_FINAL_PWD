@@ -70,6 +70,16 @@ include_once "../estructura/cabecera.php";
                     </div>
                 </div>
             </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Mi Cuenta</h5>
+                        <p class="card-text">Gestioná tus datos personales.</p>
+                        <a href="../usuarios/editarUsuario.php" class="btn btn-primary w-100">Editar mi cuenta</a>
+                    </div>
+                </div>
+            </div>
         <?php endif; ?>
     </div>
 
@@ -84,11 +94,11 @@ include_once "../estructura/cabecera.php";
             <div class="col-md-4 mb-3">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title"><?= $menu->getMeNombre(); ?></h5>
-                        <p class="card-text"><?= $menu->getMeDescripcion(); ?></p>
+                        <h5 class="card-title"><?= htmlspecialchars($menu->getMeNombre()); ?></h5>
+                        <p class="card-text"><?= htmlspecialchars($menu->getMeDescripcion()); ?></p>
 
                         <?php if (!empty($menu->getMeDescripcion())): ?>
-                            <a href="<?= $GLOBALS['VISTA_URL'] . 'secciones/' . $menu->getMeDescripcion(); ?>" class="btn btn-outline-primary w-100">
+                            <a href="<?= $GLOBALS['VISTA_URL'] . 'secciones/' . htmlspecialchars($menu->getMeDescripcion()); ?>" class="btn btn-outline-primary w-100">
                                 Ir al menú
                             </a>
                         <?php else: ?>
