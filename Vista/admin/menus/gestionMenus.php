@@ -45,7 +45,7 @@ include_once dirname(__DIR__, 2) . '/estructura/cabecera.php';
 
     <?php if ($ok == 1): ?>
         <div class="alert alert-success">Operación realizada correctamente.</div>
-    <?php elseif($ok === "0"): ?>
+    <?php elseif ($ok === "0"): ?>
         <div class="alert alert-danger">Ocurrió un error al realizar la operación.</div>
     <?php endif; ?>
 
@@ -144,6 +144,8 @@ include_once dirname(__DIR__, 2) . '/estructura/cabecera.php';
         </div>
     </div>
 
+
+
     <!-- ================= LISTADO DEL MENÚ ================= -->
     <div class="card">
         <div class="card-header bg-dark text-white">Estructura actual</div>
@@ -193,13 +195,142 @@ include_once dirname(__DIR__, 2) . '/estructura/cabecera.php';
             <?php endif; ?>
         </div>
     </div>
+
+<!-- ================= GESTIÓN DE STOCK CON AJAX ================= -->
+<div class="card mb-4">
+    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+        <strong>Control de Stock en Tiempo Real</strong>
+        <small class="text-success" id="mensajeAjax"></small>
+    </div>
+    <div class="card-body">
+        <?php
+        $abmProducto = new AbmProducto();
+        $todosLosProductos = $abmProducto->listar();
+        ?>
+
+        <?php if (empty($todosLosProductos)): ?>
+            <p class="text-muted">No hay productos registrados todavía.</p>
+        <?php else: ?>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="tablaStock">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Producto</th>
+                            <th>Detalle</th>
+                            <th class="text-center">Stock</th>
+                            <th class="text-center">Acciones Rápidas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($todosLosProductos as $prod): ?>
+                            <tr data-id="<?= $prod->getIdProducto(); ?>">
+                                <td><?= $prod->getIdProducto(); ?></td>
+                                <td><strong><?= htmlspecialchars($prod->getProNombre()); ?></strong></td>
+                                <td><?= htmlspecialchars($prod->getProDetalle()); ?></td>
+                                <td class="text-center">
+                                    <span class="badge fs-6 <?= $prod->getProCantStock() <= 0 ? 'bg-danger' : ($prod->getProCantStock() <= 5 ? 'bg-warning text-dark' : 'bg-success') ?>">
+                                        <?= $prod->getProCantStock(); ?>
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-success btn-sm me-1" onclick="cambiarStock(<?= $prod->getIdProducto(); ?>, 1)" title="+1">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm me-2" onclick="cambiarStock(<?= $prod->getIdProducto(); ?>, -1)" title="-1"
+                                        <?= $prod->getProCantStock() <= 0 ? 'disabled' : '' ?>>
+                                        <i class="fa fa-minus"></i>
+                                    </button>
+
+                                    <input type="number" min="0" value="<?= $prod->getProCantStock(); ?>"
+                                           class="form-control form-control-sm d-inline-block text-center"
+                                           style="width: 80px;"
+                                           onblur="actualizarStockDirecto(<?= $prod->getIdProducto(); ?>, this.value)">
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+    </div>
 </div>
+</div>
+<script>
+// Función para +1 o -1
+function cambiarStock(id, cambio) {
+    fetch(`accion/stockAjax.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `id=${id}&cambio=${cambio}`
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            const fila = document.querySelector(`tr[data-id="${id}"]`);
+            const badge = fila.querySelector('.badge');
+            const input = fila.querySelector('input[type="number"]');
+            const btnMenos = fila.querySelector('button[title="-1"]');
+
+            // Actualizar badge y input
+            badge.textContent = data.nuevoStock;
+            input.value = data.nuevoStock;
+
+            // Cambiar color del badge
+            badge.classList.remove('bg-danger', 'bg-warning', 'bg-success', 'text-dark');
+            if (data.nuevoStock <= 0) {
+                badge.classList.add('bg-danger');
+                btnMenos.disabled = true;
+            } else if (data.nuevoStock <= 5) {
+                badge.classList.add('bg-warning', 'text-dark');
+                btnMenos.disabled = false;
+            } else {
+                badge.classList.add('bg-success');
+                btnMenos.disabled = false;
+            }
+
+            // Mensaje flotante
+            mostrarMensaje('Stock actualizado', 'success');
+        }
+    });
+}
+
+// Actualizar con el input directo
+function actualizarStockDirecto(id, valor) {
+    const nuevo = parseInt(valor);
+    if (isNaN(nuevo) || nuevo < 0) return;
+
+    fetch(`accion/stockAjax.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `id=${id}&stock=${nuevo}`
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            const fila = document.querySelector(`tr[data-id="${id}"]`);
+            const badge = fila.querySelector('.badge');
+            badge.textContent = data.nuevoStock;
+            badge.className = 'badge fs-6 ' + (data.nuevoStock <= 0 ? 'bg-danger' : data.nuevoStock <= 5 ? 'bg-warning text-dark' : 'bg-success');
+            mostrarMensaje('Stock actualizado', 'success');
+        }
+    });
+}
+
+// Mensaje flotante bonito
+function mostrarMensaje(texto, tipo = 'success') {
+    const msg = document.getElementById('mensajeAjax');
+    msg.textContent = texto;
+    msg.className = tipo === 'success' ? 'text-success' : 'text-danger';
+    setTimeout(() => msg.textContent = '', 2000);
+}
+</script>
 
 <script>
-document.getElementById("tipo").addEventListener("change", function () {
-    document.getElementById("bloquePadre").style.display =
-        (this.value === "sub") ? "block" : "none";
-});
+    document.getElementById("tipo").addEventListener("change", function() {
+        document.getElementById("bloquePadre").style.display =
+            (this.value === "sub") ? "block" : "none";
+    });
 </script>
 
 <?php include_once dirname(__DIR__, 2) . '/estructura/pie.php'; ?>
