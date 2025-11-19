@@ -23,4 +23,11 @@ class AbmUsuarioRol {
         $obj->getObjUsuario()->setIdUsuario($idusuario);
         return $obj->obtenerRoles();
     }
+    public function rolesDeUsuarioConID($idusuario) {
+    $obj = new UsuarioRol();
+    $obj->getObjUsuario()->setIdUsuario($idusuario);
+    return $obj->obtenerRolesConID();
+}
+
+
 }

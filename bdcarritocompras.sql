@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 18-11-2025 a las 20:51:36
+-- Tiempo de generación: 19-11-2025 a las 21:06:58
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -17,15 +17,9 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
-
-/*Base de datos: `bdcarritocompras`*/
-
--- 1. Create the database if it doesn't exist
-CREATE DATABASE IF NOT EXISTS `bdcarritocompras` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- 2. Select the database for execution
-USE `bdcarritocompras`;
--- --------------------------------------------------------
+--
+-- Base de datos: `bdcarritocompras`
+--
 
 -- --------------------------------------------------------
 
@@ -38,6 +32,17 @@ CREATE TABLE `compra` (
   `cofecha` timestamp NOT NULL DEFAULT current_timestamp(),
   `idusuario` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `compra`
+--
+
+INSERT INTO `compra` (`idcompra`, `cofecha`, `idusuario`) VALUES
+(1, '2025-11-19 18:41:28', 11),
+(2, '2025-11-19 18:46:01', 5),
+(3, '2025-11-19 18:51:52', 5),
+(4, '2025-11-19 19:09:54', 5),
+(5, '2025-11-19 19:27:43', 5);
 
 -- --------------------------------------------------------
 
@@ -52,6 +57,17 @@ CREATE TABLE `compraestado` (
   `cefechaini` timestamp NOT NULL DEFAULT current_timestamp(),
   `cefechafin` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `compraestado`
+--
+
+INSERT INTO `compraestado` (`idcompraestado`, `idcompra`, `idcompraestadotipo`, `cefechaini`, `cefechafin`) VALUES
+(1, 1, 1, '2025-11-19 18:41:28', NULL),
+(2, 2, 1, '2025-11-19 18:46:01', NULL),
+(3, 3, 1, '2025-11-19 18:51:52', NULL),
+(4, 4, 1, '2025-11-19 19:09:54', NULL),
+(5, 5, 1, '2025-11-19 19:27:43', NULL);
 
 -- --------------------------------------------------------
 
@@ -88,6 +104,17 @@ CREATE TABLE `compraitem` (
   `cicantidad` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Volcado de datos para la tabla `compraitem`
+--
+
+INSERT INTO `compraitem` (`idcompraitem`, `idproducto`, `idcompra`, `cicantidad`) VALUES
+(1, 16, 1, 3),
+(2, 16, 2, 2),
+(3, 16, 3, 1),
+(4, 16, 4, 2),
+(5, 16, 5, 2);
+
 -- --------------------------------------------------------
 
 --
@@ -107,11 +134,8 @@ CREATE TABLE `menu` (
 --
 
 INSERT INTO `menu` (`idmenu`, `menombre`, `medescripcion`, `idpadre`, `medeshabilitado`) VALUES
-(7, 'nuevo', 'kkkkk', NULL, NULL),
-(8, 'nuevo', 'kkkkk', NULL, NULL),
-(9, 'nuevo', 'kkkkk', 7, NULL),
-(10, 'nuevo', 'kkkkk', NULL, NULL),
-(11, 'nuevo', 'kkkkk', NULL, NULL);
+(94, 'Celulares', 'celulares.php', NULL, '0000-00-00 00:00:00'),
+(95, 'Iphone', 'celulares/iphone.php', 94, '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -138,6 +162,14 @@ CREATE TABLE `producto` (
   `idusuario` bigint(20) NOT NULL,
   `prodeshabilitado` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `producto`
+--
+
+INSERT INTO `producto` (`idproducto`, `pronombre`, `prodetalle`, `procantstock`, `idusuario`, `prodeshabilitado`) VALUES
+(16, 'celulares_iphone_iphone 12', '402000', 1, 4, NULL),
+(17, 'celulares_ipad air', '11123000', 2, 4, NULL);
 
 -- --------------------------------------------------------
 
@@ -177,9 +209,9 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`idusuario`, `usnombre`, `uspass`, `usmail`, `usdeshabilitado`) VALUES
-(1, 'admin', '0192023a7bbd73250516f069df18b500', 'adm@gmail.com', NULL),
 (4, 'ale.c', '$2y$10$s2P69PrU9MRDkWN4g7PdiuhUHvb5rt6/Mht31A/UYbEhaR56IoAMi', 'alejandro.claure@est.fi.uncoma.edu.ar', NULL),
-(5, 'ale.c1', '$2y$10$xSl.XVXUNSz3AbGUkFjIAOBHRpD0yDNQmv.MmZLP13ymaH/r5agum', 'alejoclaure@gmail.com', NULL);
+(5, 'ale.c1', '$2y$10$xSl.XVXUNSz3AbGUkFjIAOBHRpD0yDNQmv.MmZLP13ymaH/r5agum', 'alejoclaure@gmail.com', NULL),
+(11, 'aleClient', '$2y$10$P0nYOrmgJzDe4YdFcXV7w.3tdk6/x.7knbtD6Gz7X.CqOoO.1kja.', 'asd@gmail.com', NULL);
 
 -- --------------------------------------------------------
 
@@ -197,8 +229,10 @@ CREATE TABLE `usuariorol` (
 --
 
 INSERT INTO `usuariorol` (`idusuario`, `idrol`) VALUES
-(1, 1),
-(4, 1);
+(4, 1),
+(5, 1),
+(5, 2),
+(11, 2);
 
 --
 -- Índices para tablas volcadas
@@ -284,43 +318,43 @@ ALTER TABLE `usuariorol`
 -- AUTO_INCREMENT de la tabla `compra`
 --
 ALTER TABLE `compra`
-  MODIFY `idcompra` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `idcompra` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `compraestado`
 --
 ALTER TABLE `compraestado`
-  MODIFY `idcompraestado` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `idcompraestado` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `compraitem`
 --
 ALTER TABLE `compraitem`
-  MODIFY `idcompraitem` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `idcompraitem` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `menu`
 --
 ALTER TABLE `menu`
-  MODIFY `idmenu` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `idmenu` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
 
 --
 -- AUTO_INCREMENT de la tabla `producto`
 --
 ALTER TABLE `producto`
-  MODIFY `idproducto` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `idproducto` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `rol`
 --
 ALTER TABLE `rol`
-  MODIFY `idrol` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idrol` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `idusuario` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `idusuario` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Restricciones para tablas volcadas
