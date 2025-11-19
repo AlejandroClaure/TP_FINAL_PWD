@@ -66,7 +66,7 @@ include_once "../estructura/cabecera.php";
                     <div class="card-body">
                         <h5 class="card-title">Catálogo</h5>
                         <p class="card-text">Explorá los productos disponibles.</p>
-                        <a href="../productos/listarProductos.php" class="btn btn-info w-100">Ver catálogo</a>
+                        <a href="../producto/listarMisProductos.php" class="btn btn-info w-100">Ver catálogo</a>
                     </div>
                 </div>
             </div>
@@ -74,7 +74,7 @@ include_once "../estructura/cabecera.php";
     </div>
 
     <!-- MENÚS DINÁMICOS -->
-    <h4 class="mt-5">Menús del sistema según tu rol</h4>
+    <h4 class="mt-5">Menús</h4>
     <div class="row mt-3">
         <?php if (empty($menus)): ?>
             <p class="text-muted">No tenés menús asignados.</p>

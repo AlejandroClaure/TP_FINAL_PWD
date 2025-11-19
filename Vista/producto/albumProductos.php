@@ -1,63 +1,73 @@
-<div class="album py-5 bg-light">
-  <div class="container">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+<?php
+include_once '../../configuracion.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-      <!-- Producto 1 -->
-      <div class="col">
-        <div class="card shadow-sm">
-          <img src="Vista/imagenes/iphone-17-pro.jpg" class="card-img-top" alt="iPhone 17 Pro" height="225" style="object-fit: cover;">
-          <div class="card-body">
-            <h5 class="card-title">iPhone 17 Pro</h5>
-            <p class="card-text">El nuevo iPhone 17 Pro con procesador A19 y pantalla OLED.</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <div class="btn-group">
-                <button type="button" class="btn btn-sm btn-outline-primary">Ver</button>
-                <button type="button" class="btn btn-sm btn-success">Agregar al carrito</button>
-              </div>
-              <small class="text-muted">$1.299.999</small>
+// Validar sesión
+$session = new Session();
+if (!$session->activa()) {
+    header("Location: " . $GLOBALS['VISTA_URL'] . "login/login.php?error=2");
+    exit;
+}
+
+// Incluir la clase de productos usando la ruta absoluta
+include_once $GLOBALS['CONTROL_PATH'] . 'AbmProducto.php';
+
+$abmProducto = new AbmProducto();
+$productos = $abmProducto->listar();
+
+$imgBaseUrl = $GLOBALS['IMG_URL'] ?? '/PWD_TPFinal/Vista/imagenes/';
+$imgDir     = dirname(__DIR__) . '/imagenes/'; // Ruta física al directorio de imágenes
+?>
+
+<div class="row g-4">
+<?php if (empty($productos)): ?>
+    <p class="text-muted text-center">No hay productos cargados.</p>
+<?php else: ?>
+    <?php foreach ($productos as $prod): ?>
+        <?php
+        // Mostrar solo nombre después del último "_"
+        $partes = explode('_', $prod->getProNombre());
+        $nombreVisible = end($partes);
+
+        // Construir nombre base de la imagen
+        $baseName = str_replace(' ', '_', $prod->getProNombre());
+
+        // Buscar archivo con extensión .jpg o .jpeg
+        if (file_exists($imgDir . $baseName . '.jpg')) {
+            $imagenURL = $imgBaseUrl . $baseName . '.jpg';
+        } elseif (file_exists($imgDir . $baseName . '.jpeg')) {
+            $imagenURL = $imgBaseUrl . $baseName . '.jpeg';
+        } else {
+            $imagenURL = $imgBaseUrl . 'no-image.jpeg';
+        }
+
+        // Debug: qué imagen intenta cargar
+        echo "<!-- Imagen buscada para {$prod->getProNombre()}: $imagenURL -->";
+        ?>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card shadow-sm h-100">
+                <img
+                    src="<?= htmlspecialchars($imagenURL, ENT_QUOTES); ?>"
+                    class="card-img-top"
+                    alt="<?= htmlspecialchars($nombreVisible, ENT_QUOTES); ?>"
+                    onerror="this.src='<?= $imgBaseUrl; ?>no-image.jpeg';"
+                >
+                <div class="card-body">
+                    <h5 class="card-title"><?= htmlspecialchars($nombreVisible); ?></h5>
+                    <p class="text-success fw-bold fs-5">
+                        $<?= htmlspecialchars($prod->getProDetalle()); ?>
+                    </p>
+                    <a
+                        href="<?= $GLOBALS['VISTA_URL'] ?? '/PWD_TPFinal/Vista/'; ?>compra/accion/agregarCarrito.php?id=<?= $prod->getIdProducto(); ?>"
+                        class="btn btn-warning w-100"
+                    >
+                        <i class="fa fa-shopping-cart"></i> Agregar al carrito
+                    </a>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-
-      <!-- Producto 2 -->
-      <div class="col">
-        <div class="card shadow-sm">
-          <img src="Vista/imagenes/Galaxy-S24.jpg" class="card-img-top" alt="Samsung Galaxy S24" height="225" style="object-fit: cover;">
-          <div class="card-body">
-            <h5 class="card-title">Samsung Galaxy S24</h5>
-            <p class="card-text">Cámara profesional y pantalla Dynamic AMOLED de 6.7”.</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <div class="btn-group">
-                <button type="button" class="btn btn-sm btn-outline-primary">Ver</button>
-                <button type="button" class="btn btn-sm btn-success">Agregar al carrito</button>
-              </div>
-              <small class="text-muted">$999.999</small>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Producto 3 -->
-      <div class="col">
-        <div class="card shadow-sm">
-          <img src="Vista/imagenes/xiaomi13.jpg" class="card-img-top" alt="Xiaomi Redmi Note 13" height="225" style="object-fit: cover;">
-          <div class="card-body">
-            <h5 class="card-title">Xiaomi Redmi Note 13</h5>
-            <p class="card-text">Gran batería y cámara de 108MP. Excelente relación precio/calidad.</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <div class="btn-group">
-                <button type="button" class="btn btn-sm btn-outline-primary">Ver</button>
-                <button type="button" class="btn btn-sm btn-success">Agregar al carrito</button>
-              </div>
-              <small class="text-muted">$499.999</small>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Más productos... -->
-
-    </div>
-  </div>
+    <?php endforeach; ?>
+<?php endif; ?>
 </div>
