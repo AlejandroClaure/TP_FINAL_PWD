@@ -1,5 +1,6 @@
 <?php
 include_once '../../configuracion.php';
+include_once '../../configuracion.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -82,7 +83,7 @@ $imgBaseUrl = rtrim($imgInfo['baseUrl'], '/') . '/';
         $nombreCompleto = $prod->getProNombre();
         $partes = explode('_', $nombreCompleto);
 
-        // Último segmento -nombre real
+        // Último segmento → nombre real
         $nombreReal = end($partes);
 
         // Nombre para mostrar al usuario
