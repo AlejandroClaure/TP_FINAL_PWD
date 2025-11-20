@@ -116,24 +116,37 @@ class Usuario extends BaseDatos {
     // ============================================================
     // INSERTAR
     // ============================================================
-    public function insertar() {
-        $resp = false;
-        $sql = "INSERT INTO usuario (usnombre, uspass, usmail, usdeshabilitado)
-                VALUES ('" . $this->getUsNombre() . "', 
-                        '" . $this->getUsPass() . "', 
-                        '" . $this->getUsMail() . "', 
-                        NULL);";
+public function insertar() {
+    $resp = false;
 
-        if ($this->Iniciar()) {
-            if ($id = $this->Ejecutar($sql)) {
-                $this->setIdUsuario($id);
-                $resp = true;
-            } else {
-                $this->setMensajeOperacion("Usuario->insertar: " . $this->getError());
-            }
+    $sql = "INSERT INTO usuario (usnombre, uspass, usmail, usdeshabilitado)
+            VALUES ('" . $this->getUsNombre() . "',
+                    '" . $this->getUsPass() . "',
+                    '" . $this->getUsMail() . "',
+                    NULL);";
+
+    if ($this->Iniciar()) {
+
+        // Ejecuta el INSERT y obtiene lastInsertId interno
+        $r = $this->Ejecutar($sql);
+
+        if ($r != -1) {
+
+            // ⚡ ESTE ES TU MÉTODO PARA OBTENER ID AUTO_INCREMENT
+            $nuevoId = $this->ultimoId();
+            $this->setIdUsuario($nuevoId);
+
+            $resp = true;
+
+        } else {
+            $this->setMensajeOperacion("Usuario->insertar: " . $this->getError());
         }
-        return $resp;
     }
+
+    return $resp;
+}
+
+
 
     // ============================================================
     // MODIFICAR

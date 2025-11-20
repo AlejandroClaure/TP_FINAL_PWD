@@ -144,5 +144,8 @@ class BaseDatos extends PDO {
 
     return $id;
 }
+public function DevolverID() {
+    return mysqli_insert_id($this->getConexion());
+}
 
 }

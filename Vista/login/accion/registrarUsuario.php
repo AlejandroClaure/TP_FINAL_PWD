@@ -3,17 +3,26 @@ require_once '../../../configuracion.php';
 
 $abm = new AbmUsuario();
 
+// Tomo datos del formulario
+$param = [];
 $param["usnombre"] = $_POST["usnombre"];
 $param["usmail"]   = $_POST["usmail"];
 $param["uspass"]   = $_POST["uspass"];
 
-$abm->registrar($param);
-if ($idUsuario) {
-    // asigno rol cliente = idrol 2
+// Registrar usuario → AHORA devuelve el ID (gracias a la corrección en AbmUsuario)
+$idUsuario = $abm->registrar($param);
+
+if ($idUsuario !== false) {
+
+    // Asigno rol cliente = idrol 2
     $abmUR = new AbmUsuarioRol();
     $abmUR->asignarRol($idUsuario, 2);
+
+    // Redirección si todo salió bien
+    header("Location: " . $GLOBALS['BASE_URL'] . "Vista/login/login.php?ok=1");
+    exit;
 }
 
-// Redirección correcta
-header("Location: " . $GLOBALS['BASE_URL'] . "Vista/login/login.php?ok=1");
+// Si algo falló, envío error
+header("Location: " . $GLOBALS['BASE_URL'] . "Vista/login/registro.php?error=1");
 exit;

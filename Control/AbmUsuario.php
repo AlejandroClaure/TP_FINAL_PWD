@@ -72,13 +72,12 @@ class AbmUsuario
     /** ALTA DESDE PANEL ADMIN */
     public function alta($param)
     {
-        $resp = false;
         $obj = $this->cargarObjetoSinClave($param);
 
         if ($obj != null && $obj->insertar()) {
-            $resp = true;
+            return $obj->getIdUsuario();
         }
-        return $resp;
+        return false;
     }
 
     /** REGISTRAR DESDE FORMULARIO PÚBLICO */
