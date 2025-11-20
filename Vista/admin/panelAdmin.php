@@ -39,7 +39,7 @@ include_once "../estructura/cabecera.php";
                 <div class="card-body">
                     <h5 class="card-title">Usuarios</h5>
                     <p class="card-text">Alta, baja y modificación de usuarios del sistema.</p>
-                    <a href="gestionUsuarios.php" class="btn btn-primary w-100">Administrar Usuarios</a>
+                    <a href="usuario/gestionUsuarios.php" class="btn btn-primary w-100">Administrar Usuarios</a>
                 </div>
             </div>
         </div>
