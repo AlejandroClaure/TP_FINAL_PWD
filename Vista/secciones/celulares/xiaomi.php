@@ -1,7 +1,7 @@
 <?php
-include_once __DIR__ . '/../../../estructura/cabecera.php';
-include_once __DIR__ . '/../../../../Control/AbmProducto.php';
-include_once __DIR__ . '/../../../../Control/AbmMenu.php';
+include_once __DIR__ . '/../../estructura/cabecera.php';
+include_once __DIR__ . '/../../../Control/AbmProducto.php';
+include_once __DIR__ . '/../../../Control/AbmMenu.php';
 
 $tipo = 'sub';
 $idPadre = 94;
@@ -131,7 +131,7 @@ if (!file_exists($logFile)) file_put_contents($logFile, "=== LOG DE BUSQUEDA DE 
 ?>
 
 <div class="container mt-4 pt-4">
-    <h1 class="mb-4">Xiaomi</h1>
+    <h1 class="mb-4"><?= htmlspecialchars('Xiaomi'); ?></h1>
 
     <div class="row g-3">
         <?php if (empty($productos)): ?>
@@ -186,9 +186,9 @@ if (!file_exists($logFile)) file_put_contents($logFile, "=== LOG DE BUSQUEDA DE 
             ?>
 
             <div class="col-md-4 col-lg-3">
-                <div class="card shadow-sm h-100 producto-img">
+                <div class="card shadow-sm h-100">
                     <img src="<?= htmlspecialchars($imagenURL, ENT_QUOTES); ?>"
-                         class="card-img-top producto-img"
+                         class="card-img-top"
                          alt="<?= htmlspecialchars($nombreReal, ENT_QUOTES); ?>"
                          onerror="this.src='<?= htmlspecialchars($imgBaseUrl . 'no-image.jpeg', ENT_QUOTES); ?>';">
 
@@ -216,4 +216,4 @@ if (!file_exists($logFile)) file_put_contents($logFile, "=== LOG DE BUSQUEDA DE 
     </div>
 </div>
 
-<?php include_once __DIR__ . '/../../../estructura/pie.php'; ?>
+<?php include_once __DIR__ . '/../../estructura/pie.php'; ?>

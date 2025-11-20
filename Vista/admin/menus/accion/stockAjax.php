@@ -24,7 +24,7 @@ if (!$prod) {
 }
 
 /* ============================================================
-   ✨ 1) ACTUALIZAR DETALLE (solo números)
+    1) ACTUALIZAR DETALLE (solo números)
    ============================================================ */
 if (isset($_POST['detalle'])) {
 
@@ -49,7 +49,7 @@ if (isset($_POST['detalle'])) {
 }
 
 /* ============================================================
-   ✨ 2) ACTUALIZAR STOCK (lógica original)
+    2) ACTUALIZAR STOCK 
    ============================================================ */
 
 $nuevoStock = $prod->getProCantStock();

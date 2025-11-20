@@ -2,45 +2,43 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require_once __DIR__ . '/../../../vendor/autoload.php';  // Si usas Composer
+require_once __DIR__ . '/../../../vendor/autoload.php';
+require_once __DIR__ . '/../../../configuracion.php';
 
-// Validar reCAPTCHA
-$secretKey = "6LcWHhMsAAAAACI_3lxNzikxT4eKcwm7BGKA2kJh";
-$captcha = $_POST['g-recaptcha-response'];
+// Captura POST
+$nombre  = isset($_POST['nombre']) ? trim($_POST['nombre']) : '';
+$email   = isset($_POST['email']) ? trim($_POST['email']) : '';
+$mensaje = isset($_POST['mensaje']) ? trim($_POST['mensaje']) : '';
 
-if (!$captcha) {
-    die("Error: Debe verificar el reCAPTCHA.");
+if (empty($nombre) || empty($email) || empty($mensaje)) {
+    die("Error: Formulario incompleto.");
 }
 
-$validarCaptcha = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$captcha");
+// reCAPTCHA v2
+$captcha = isset($_POST['g-recaptcha-response']) ? $_POST['g-recaptcha-response'] : '';
+if (!$captcha) die("Error: Debe verificar el reCAPTCHA.");
+
+$secretKey = "6LfrKxMsAAAAAHcrhiI14qKIRAW62arFAQCse-1K"; 
+$validarCaptcha = file_get_contents(
+    "https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$captcha"
+);
 $captchaResponse = json_decode($validarCaptcha);
+if (!$captchaResponse->success) die("Error: reCAPTCHA inválido.");
 
-if (!$captchaResponse->success) {
-    die("Error: reCAPTCHA inválido.");
-}
-
-// Si el captcha es correcto → continuar
-$nombre = $_POST['nombre'];
-$email = $_POST['email'];
-$mensaje = $_POST['mensaje'];
-
+// PHPMailer
 $mail = new PHPMailer(true);
-
 try {
-    // CONFIG SMTP
     $mail->isSMTP();
-    $mail->Host = 'smtp.gmail.com';
-    $mail->SMTPAuth = true;
-    $mail->Username = 'nasabunc@gmail.com';
-    $mail->Password = 'TU_CONTRASEÑA_APP';
+    $mail->Host       = 'smtp.gmail.com';
+    $mail->SMTPAuth   = true;
+    $mail->Username   = 'alejandro.claure@est.fi.uncoma.edu.ar'; 
+    $mail->Password   = 'bblz pabp xvew gbjb';                     
     $mail->SMTPSecure = 'ssl';
-    $mail->Port = 465;
+    $mail->Port       = 465;
 
-    // Destinos
-    $mail->setFrom('nasabunc@gmail.com', 'Contacto Web');
-    $mail->addAddress('nasabunc@gmail.com'); 
+    $mail->setFrom('alejandro.claure@est.fi.uncoma.edu.ar', 'Formulario Web');
+    $mail->addAddress('alejandro.claure@est.fi.uncoma.edu.ar'); 
 
-    // Contenido
     $mail->isHTML(true);
     $mail->Subject = "Nuevo mensaje desde el formulario de contacto";
     $mail->Body = "
@@ -51,8 +49,9 @@ try {
     ";
 
     $mail->send();
-    echo "<script>alert('Mensaje enviado correctamente'); window.location.href='contacto.php';</script>";
+
+    echo "<script>alert('Mensaje enviado correctamente'); window.location.href='" . $GLOBALS['VISTA_URL'] . "contacto/contacto.php';</script>";
 
 } catch (Exception $e) {
-    echo "<script>alert('Error al enviar el mensaje'); history.back();</script>";
+    echo "<script>alert('Error al enviar el mensaje: " . $mail->ErrorInfo . "'); history.back();</script>";
 }
