@@ -23,9 +23,38 @@ if (!$prod) {
     exit;
 }
 
+/* ============================================================
+   ✨ 1) ACTUALIZAR DETALLE (solo números)
+   ============================================================ */
+if (isset($_POST['detalle'])) {
+
+    // Solo números
+    $nuevoDetalle = preg_replace('/[^0-9]/', '', $_POST['detalle']);
+
+    $param = [
+        'idproducto'   => $id,
+        'pronombre'    => $prod->getProNombre(),
+        'prodetalle'   => $nuevoDetalle,
+        'procantstock' => $prod->getProCantStock(),
+        'idusuario'    => $prod->getIdUsuario()
+    ];
+
+    $exito = $abm->modificar($param);
+
+    echo json_encode([
+        'success'      => $exito,
+        'nuevoDetalle' => $nuevoDetalle
+    ]);
+    exit;
+}
+
+/* ============================================================
+   ✨ 2) ACTUALIZAR STOCK (lógica original)
+   ============================================================ */
+
 $nuevoStock = $prod->getProCantStock();
 
-// ¿Viene cambio +1/-1 o valor directo?
+// ¿Viene cambio +1/-1 o valor fijo?
 if (isset($_POST['cambio'])) {
     $nuevoStock += (int)$_POST['cambio'];
 } elseif (isset($_POST['stock'])) {
@@ -36,7 +65,7 @@ $nuevoStock = max(0, $nuevoStock); // nunca negativo
 
 $param = [
     'idproducto'   => $id,
-    'pronombre'     => $prod->getProNombre(),
+    'pronombre'    => $prod->getProNombre(),
     'prodetalle'   => $prod->getProDetalle(),
     'procantstock' => $nuevoStock,
     'idusuario'    => $prod->getIdUsuario()
@@ -45,7 +74,7 @@ $param = [
 $exito = $abm->modificar($param);
 
 echo json_encode([
-    'success' => $exito,
+    'success'    => $exito,
     'nuevoStock' => $nuevoStock
 ]);
 exit;
