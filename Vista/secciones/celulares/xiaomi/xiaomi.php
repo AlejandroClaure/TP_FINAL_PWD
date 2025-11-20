@@ -1,7 +1,7 @@
 <?php
-include_once __DIR__ . '/../../estructura/cabecera.php';
-include_once __DIR__ . '/../../../Control/AbmProducto.php';
-include_once __DIR__ . '/../../../Control/AbmMenu.php';
+include_once __DIR__ . '/../../../estructura/cabecera.php';
+include_once __DIR__ . '/../../../../Control/AbmProducto.php';
+include_once __DIR__ . '/../../../../Control/AbmMenu.php';
 
 $tipo = 'sub';
 $idPadre = 94;
@@ -216,4 +216,4 @@ if (!file_exists($logFile)) file_put_contents($logFile, "=== LOG DE BUSQUEDA DE 
     </div>
 </div>
 
-<?php include_once __DIR__ . '/../../estructura/pie.php'; ?>
+<?php include_once __DIR__ . '/../../../estructura/pie.php'; ?>
