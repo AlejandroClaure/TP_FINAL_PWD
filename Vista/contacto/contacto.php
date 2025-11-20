@@ -5,5 +5,5 @@ ini_set('display_errors', 1);
 ?>
 
 <?php include_once '../estructura/cabecera.php'; ?>
-
+<?php include_once 'formContacto.php'; ?>
 <?php include_once '../estructura/pie.php'; ?>
