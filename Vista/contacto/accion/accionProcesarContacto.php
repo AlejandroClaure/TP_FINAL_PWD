@@ -2,10 +2,10 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require '../../vendor/autoload.php';  // Si usas Composer
+require_once __DIR__ . '/../../../vendor/autoload.php';  // Si usas Composer
 
 // Validar reCAPTCHA
-$secretKey = "TU_SECRET_KEY_AQUÍ";
+$secretKey = "6LcWHhMsAAAAACI_3lxNzikxT4eKcwm7BGKA2kJh";
 $captcha = $_POST['g-recaptcha-response'];
 
 if (!$captcha) {
@@ -31,14 +31,14 @@ try {
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
-    $mail->Username = 'TU_EMAIL@gmail.com';
+    $mail->Username = 'nasabunc@gmail.com';
     $mail->Password = 'TU_CONTRASEÑA_APP';
     $mail->SMTPSecure = 'ssl';
     $mail->Port = 465;
 
     // Destinos
-    $mail->setFrom('TU_EMAIL@gmail.com', 'Contacto Web');
-    $mail->addAddress('TU_EMAIL@gmail.com'); 
+    $mail->setFrom('nasabunc@gmail.com', 'Contacto Web');
+    $mail->addAddress('nasabunc@gmail.com'); 
 
     // Contenido
     $mail->isHTML(true);

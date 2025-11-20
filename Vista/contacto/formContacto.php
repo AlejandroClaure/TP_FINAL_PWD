@@ -4,7 +4,7 @@
 
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <form action="accionProcesarContacto.php" method="POST">
+            <form action="../../Vista/contacto/accion/accionProcesarContacto.php" method="POST">
 
                 <!-- Nombre -->
                 <div class="mb-3">
@@ -26,7 +26,7 @@
 
                 <!-- reCAPTCHA -->
                 <div class="mb-3">
-                    <div class="g-recaptcha" data-sitekey="TU_SITE_KEY_AQUÍ"></div>
+                    <div class="g-recaptcha" data-sitekey="6LcWHhMsAAAAAB2BJkH34eq-U93EBHhhfQXxt4NF"></div>
                 </div>
 
                 <button type="submit" class="btn btn-success w-100">Enviar Mensaje</button>
