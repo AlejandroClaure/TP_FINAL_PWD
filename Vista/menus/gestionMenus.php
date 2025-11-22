@@ -95,54 +95,66 @@ include_once dirname(__DIR__, 1) . '/estructura/cabecera.php';
         </div>
     </div>
 
-    <!-- ================= CREAR PRODUCTO ================= -->
-    <div class="card mb-4">
-        <div class="card-header bg-success text-white">Agregar nuevo producto</div>
-        <div class="card-body">
-            <form action="accion/accionCrearProducto.php" method="POST" enctype="multipart/form-data">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label>Nombre</label>
-                        <input type="text" name="pronombre" class="form-control" required>
-                    </div>
+<!-- ================= CREAR PRODUCTO ================= -->
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">Agregar nuevo producto</div>
+    <div class="card-body">
+        <form action="accion/accionCrearProducto.php" method="POST" enctype="multipart/form-data">
+            <div class="row g-3">
 
-                    <div class="col-md-6">
-                        <label>Stock</label>
-                        <input type="number" name="procantstock" class="form-control" required>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label>Sección</label>
-                        <select name="categoria" class="form-select" required>
-                            <option value="">-- Seleccionar --</option>
-                            <?php foreach ($padres as $p): ?>
-                                <option value="<?= $p->getMeNombre(); ?>"><?= $p->getMeNombre(); ?></option>
-                                <?php if (isset($hijosMap[$p->getIdMenu()])): ?>
-                                    <?php foreach ($hijosMap[$p->getIdMenu()] as $h): ?>
-                                        <option value="<?= $h->getMeNombre(); ?>">&nbsp;&nbsp;↳ <?= $h->getMeNombre(); ?></option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label>Descripción / Precio</label>
-                        <input type="text" name="prodetalle" class="form-control" required>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label>Imagen (JPG o PNG)</label>
-                        <input type="file" name="proimagen" class="form-control" accept="image/*" required>
-                    </div>
-
-                    <div class="col-12">
-                        <button class="btn btn-primary"><i class="fa fa-plus"></i> Agregar producto</button>
-                    </div>
+                <div class="col-md-6">
+                    <label>Nombre</label>
+                    <input type="text" name="pronombre" class="form-control" required>
                 </div>
-            </form>
-        </div>
+
+                <div class="col-md-6">
+                    <label>Stock</label>
+                    <input type="number" name="procantstock" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label>Sección</label>
+                    <select name="categoria" class="form-select" required>
+                        <option value="">-- Seleccionar --</option>
+                        <?php foreach ($padres as $p): ?>
+                            <option value="<?= $p->getMeNombre(); ?>"><?= $p->getMeNombre(); ?></option>
+                            <?php if (isset($hijosMap[$p->getIdMenu()])): ?>
+                                <?php foreach ($hijosMap[$p->getIdMenu()] as $h): ?>
+                                    <option value="<?= $h->getMeNombre(); ?>">&nbsp;&nbsp;↳ <?= $h->getMeNombre(); ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label>Precio</label>
+                    <input type="number" name="proprecio" class="form-control" required step="0.01">
+                </div>
+
+                <div class="col-md-6">
+                    <label>Descripción (opcional)</label>
+                    <textarea name="prodetalle" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="col-md-6">
+                    <label>Imagen (JPG o PNG)</label>
+                    <input type="file" name="proimagen" class="form-control" accept="image/*" required>
+                </div>
+
+
+                <div class="col-12">
+                    <button class="btn btn-primary">
+                        <i class="fa fa-plus"></i> Agregar producto
+                    </button>
+                </div>
+
+            </div>
+        </form>
     </div>
+</div>
+
+
 
 
 

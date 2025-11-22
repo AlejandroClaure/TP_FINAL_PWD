@@ -4,24 +4,26 @@ class AbmMenu {
 
   
     public function alta($param) {
-        $resp = false;
 
-        $objMenu = new Menu();
-        $idpadre = empty($param['idpadre']) ? null : $param['idpadre'];
+    $objMenu = new Menu();
 
-        $objMenu->setear(
-            null,
-            $param['menombre'],
-            $param['medescripcion'],
-            $idpadre,
-            $param['medeshabilitado'] ?? null
-        );
+    // Normalizar valores
+    $idpadre = empty($param['idpadre']) ? null : $param['idpadre'];
+    $medeshabilitado = isset($param['medeshabilitado']) ? $param['medeshabilitado'] : 0;
+    $melink = isset($param['melink']) ? $param['melink'] : '';
 
-        if ($objMenu->insertar()) {
-            $resp = true;
-        }
-        return $resp;
-    }
+    $objMenu->setear(
+        null,
+        $param['menombre'],
+        $melink,
+        $idpadre,
+        $param['medescripcion'] ?? '',
+        $medeshabilitado
+    );
+
+    return $objMenu->insertar();
+}
+
 
    
     public function baja($param) {
@@ -40,54 +42,52 @@ class AbmMenu {
 
     
     public function modificacion($param) {
-        $resp = false;
 
-        if ($this->seteadosCamposClaves($param)) {
+    if (!$this->seteadosCamposClaves($param)) return false;
 
-            $objMenu = new Menu();
-            $idpadre = empty($param['idpadre']) ? null : $param['idpadre'];
+    $objMenu = new Menu();
 
-            $objMenu->setear(
-                $param['idmenu'],
-                $param['menombre'],
-                $param['medescripcion'],
-                $idpadre,
-                $param['medeshabilitado'] ?? null
-            );
+    $objMenu->setear(
+        $param['idmenu'],
+        $param['menombre'],
+        $param['melink'],
+        $param['idpadre'] ?? null,
+        $param['medescripcion'] ?? '',
+        $param['medeshabilitado'] ?? null
+    );
 
-            if ($objMenu->modificar()) {
-                $resp = true;
-            }
-        }
-
-        return $resp;
-    }
+    return $objMenu->modificar();
+}
 
     public function buscar($param) {
-        $where = " true ";
 
-        if ($param != null) {
+    $where = " true ";
 
-            if (isset($param['idmenu'])) {
-                $where .= " AND idmenu = " . intval($param['idmenu']);
-            }
+    if ($param != null) {
 
-            if (isset($param['menombre'])) {
-                $nombre = addslashes($param['menombre']);
-                $where .= " AND menombre LIKE '%{$nombre}%'";
-            }
-
-            if (isset($param['idpadre'])) {
-                $where .= " AND idpadre = " . intval($param['idpadre']);
-            }
-
-            if (isset($param['medeshabilitado'])) {
-                $where .= " AND medeshabilitado = '" . $param['medeshabilitado'] . "'";
-            }
+        if (isset($param['idmenu'])) {
+            $where .= " AND idmenu = " . intval($param['idmenu']);
         }
 
-        return Menu::listar($where);
+        if (isset($param['menombre'])) {
+            $where .= " AND menombre LIKE '%" . addslashes($param['menombre']) . "%'";
+        }
+
+        if (isset($param['melink'])) {
+            $where .= " AND melink LIKE '%" . addslashes($param['melink']) . "%'";
+        }
+
+        if (isset($param['idpadre'])) {
+            $where .= " AND idpadre = " . intval($param['idpadre']);
+        }
+
+        if (isset($param['medeshabilitado'])) {
+            $where .= " AND medeshabilitado = '" . $param['medeshabilitado'] . "'";
+        }
     }
+
+    return Menu::listar($where);
+}
 
     /* Obtiene los menús accesibles por un usuario */
  public function obtenerMenuPorRoles($roles) {

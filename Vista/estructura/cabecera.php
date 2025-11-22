@@ -157,7 +157,7 @@ foreach ($menus as $m) {
 
                         <!-- "Ver todo" -->
                         <div class="mb-1">
-                            <a href="<?= $GLOBALS['VISTA_URL']; ?>secciones/<?= $padre->getMeDescripcion(); ?>" class="text-decoration-none small">
+                            <a href="<?= $GLOBALS['VISTA_URL']; ?>secciones/<?= $padre->getMeLink(); ?>" class="text-decoration-none small">
                                 Ver todo <?= htmlspecialchars($padre->getMeNombre()); ?>
                             </a>
                         </div>
@@ -166,7 +166,7 @@ foreach ($menus as $m) {
                             <ul class="list-group ms-3 mt-1">
                                 <?php foreach ($menusHijos[$padre->getIdMenu()] as $hijo): ?>
                                     <li class="list-group-item py-1">
-                                        <a href="<?= $GLOBALS['VISTA_URL']; ?>secciones/<?= $hijo->getMeDescripcion(); ?>" class="text-decoration-none">
+                                        <a href="<?= $GLOBALS['VISTA_URL']; ?>secciones/<?= $hijo->getMeLink(); ?>" class="text-decoration-none">
                                             <?= htmlspecialchars($hijo->getMeNombre()); ?>
                                         </a>
                                     </li>
