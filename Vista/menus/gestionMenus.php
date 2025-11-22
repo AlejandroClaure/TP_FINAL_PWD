@@ -1,4 +1,5 @@
 <?php
+// Vista/menus/gestionMenus.php
 include_once dirname(__DIR__, 2) . '/configuracion.php';
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -8,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $session = new Session();
 $usuario = $session->getUsuario();
 
-// Solo admin
+// Seguridad: solo admin
 $rolesUsuario = $usuario ? (new AbmUsuarioRol())->rolesDeUsuario($usuario->getIdUsuario()) : [];
 if (!$usuario || !in_array("admin", $rolesUsuario)) {
     header("Location: " . $GLOBALS['VISTA_URL'] . "login/paginaSegura.php");
@@ -16,7 +17,7 @@ if (!$usuario || !in_array("admin", $rolesUsuario)) {
 }
 
 $abmMenu = new AbmMenu();
-$menus = $abmMenu->buscar(null);
+$menus = $abmMenu->buscar(null) ?? [];
 
 // Separar padres e hijos
 $padres = [];
@@ -25,7 +26,8 @@ foreach ($menus as $m) {
     if ($m->getObjMenuPadre() === null) {
         $padres[] = $m;
     } else {
-        $hijosMap[$m->getObjMenuPadre()->getIdMenu()][] = $m;
+        $padreId = $m->getObjMenuPadre()->getIdMenu();
+        $hijosMap[$padreId][] = $m;
     }
 }
 
@@ -77,10 +79,10 @@ include_once dirname(__DIR__, 1) . '/estructura/cabecera.php';
                         <select name="idpadre" class="form-select">
                             <option value="">-- Seleccionar --</option>
                             <?php foreach ($padres as $p): ?>
-                                <option value="<?= $p->getIdMenu(); ?>"><?= $p->getMeNombre(); ?></option>
+                                <option value="<?= $p->getIdMenu(); ?>"><?= htmlspecialchars($p->getMeNombre()); ?></option>
                                 <?php if (isset($hijosMap[$p->getIdMenu()])): ?>
                                     <?php foreach ($hijosMap[$p->getIdMenu()] as $sub): ?>
-                                        <option value="<?= $sub->getIdMenu(); ?>">&nbsp;&nbsp;↳ <?= $sub->getMeNombre(); ?></option>
+                                        <option value="<?= $sub->getIdMenu(); ?>">&nbsp;&nbsp;↳ <?= htmlspecialchars($sub->getMeNombre()); ?></option>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
@@ -95,68 +97,61 @@ include_once dirname(__DIR__, 1) . '/estructura/cabecera.php';
         </div>
     </div>
 
-<!-- ================= CREAR PRODUCTO ================= -->
-<div class="card mb-4">
-    <div class="card-header bg-success text-white">Agregar nuevo producto</div>
-    <div class="card-body">
-        <form action="accion/accionCrearProducto.php" method="POST" enctype="multipart/form-data">
-            <div class="row g-3">
+    <!-- ================= CREAR PRODUCTO (se deja igual que antes) ================= -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">Agregar nuevo producto</div>
+        <div class="card-body">
+            <form action="accion/accionCrearProducto.php" method="POST" enctype="multipart/form-data">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label>Nombre</label>
+                        <input type="text" name="pronombre" class="form-control" required>
+                    </div>
 
-                <div class="col-md-6">
-                    <label>Nombre</label>
-                    <input type="text" name="pronombre" class="form-control" required>
+                    <div class="col-md-6">
+                        <label>Stock</label>
+                        <input type="number" name="procantstock" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Sección</label>
+                        <select name="categoria" class="form-select" required>
+                            <option value="">-- Seleccionar --</option>
+                            <?php foreach ($padres as $p): ?>
+                                <option value="<?= htmlspecialchars($p->getMeNombre()); ?>"><?= htmlspecialchars($p->getMeNombre()); ?></option>
+                                <?php if (isset($hijosMap[$p->getIdMenu()])): ?>
+                                    <?php foreach ($hijosMap[$p->getIdMenu()] as $h): ?>
+                                        <option value="<?= htmlspecialchars($h->getMeNombre()); ?>">&nbsp;&nbsp;↳ <?= htmlspecialchars($h->getMeNombre()); ?></option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Precio</label>
+                        <input type="number" name="proprecio" class="form-control" required step="0.01">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Descripción (opcional)</label>
+                        <textarea name="prodetalle" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Imagen (JPG o PNG)</label>
+                        <input type="file" name="proimagen" class="form-control" accept="image/*" required>
+                    </div>
+
+                    <div class="col-12">
+                        <button class="btn btn-primary">
+                            <i class="fa fa-plus"></i> Agregar producto
+                        </button>
+                    </div>
                 </div>
-
-                <div class="col-md-6">
-                    <label>Stock</label>
-                    <input type="number" name="procantstock" class="form-control" required>
-                </div>
-
-                <div class="col-md-6">
-                    <label>Sección</label>
-                    <select name="categoria" class="form-select" required>
-                        <option value="">-- Seleccionar --</option>
-                        <?php foreach ($padres as $p): ?>
-                            <option value="<?= $p->getMeNombre(); ?>"><?= $p->getMeNombre(); ?></option>
-                            <?php if (isset($hijosMap[$p->getIdMenu()])): ?>
-                                <?php foreach ($hijosMap[$p->getIdMenu()] as $h): ?>
-                                    <option value="<?= $h->getMeNombre(); ?>">&nbsp;&nbsp;↳ <?= $h->getMeNombre(); ?></option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <div class="col-md-6">
-                    <label>Precio</label>
-                    <input type="number" name="proprecio" class="form-control" required step="0.01">
-                </div>
-
-                <div class="col-md-6">
-                    <label>Descripción (opcional)</label>
-                    <textarea name="prodetalle" class="form-control" rows="2"></textarea>
-                </div>
-
-                <div class="col-md-6">
-                    <label>Imagen (JPG o PNG)</label>
-                    <input type="file" name="proimagen" class="form-control" accept="image/*" required>
-                </div>
-
-
-                <div class="col-12">
-                    <button class="btn btn-primary">
-                        <i class="fa fa-plus"></i> Agregar producto
-                    </button>
-                </div>
-
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
-
-
-
-
 
     <!-- ================= LISTADO DEL MENÚ ================= -->
     <div class="card">
@@ -170,15 +165,17 @@ include_once dirname(__DIR__, 1) . '/estructura/cabecera.php';
                         <div class="list-group-item">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <strong><?= $p->getMeNombre(); ?></strong>
-                                   <!-- <div class="small text-muted"><?= $p->getMeDescripcion(); ?></div>-->
+                                    <strong><?= htmlspecialchars($p->getMeNombre()); ?></strong>
                                 </div>
                                 <div class="btn-group">
                                     <a href="accion/toggleVisibilidad.php?idmenu=<?= $p->getIdMenu(); ?>" class="btn btn-sm btn-outline-info">
                                         <?= $p->getMeDeshabilitado() ? "🚫" : "👁️" ?>
                                     </a>
                                     <a href="<?= $GLOBALS['VISTA_URL']; ?>menus/editarMenu.php?idmenu=<?= $p->getIdMenu(); ?>" class="btn btn-sm btn-outline-warning">Editar</a>
-                                    <a href="accion/accionEliminarMenu.php?idmenu=<?= $p->getIdMenu(); ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar sección?');">Eliminar</a>
+                                    <a href="accion/accionEliminarMenu.php?idmenu=<?= $p->getIdMenu(); ?>" class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Eliminar sección y archivos asociados de forma permanente? Esta acción no se puede deshacer.');">
+                                        Eliminar
+                                    </a>
                                 </div>
                             </div>
 
@@ -187,15 +184,17 @@ include_once dirname(__DIR__, 1) . '/estructura/cabecera.php';
                                     <?php foreach ($hijosMap[$p->getIdMenu()] as $h): ?>
                                         <li class="d-flex justify-content-between align-items-center">
                                             <div>
-                                                <?= $h->getMeNombre(); ?>
-                                                <!-- <div class="small text-muted"><?= $h->getMeDescripcion(); ?></div>-->
+                                                <?= htmlspecialchars($h->getMeNombre()); ?>
                                             </div>
                                             <div class="btn-group">
                                                 <a href="accion/toggleVisibilidad.php?idmenu=<?= $h->getIdMenu(); ?>" class="btn btn-sm btn-outline-info">
                                                     <?= $h->getMeDeshabilitado() ? "🚫" : "👁️" ?>
                                                 </a>
                                                 <a href="<?= $GLOBALS['VISTA_URL']; ?>menus/editarMenu.php?idmenu=<?= $h->getIdMenu(); ?>" class="btn btn-sm btn-outline-warning">Editar</a>
-                                                <a href="accion/accionEliminarMenu.php?idmenu=<?= $h->getIdMenu(); ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar sub-sección?');">Eliminar</a>
+                                                <a href="accion/accionEliminarMenu.php?idmenu=<?= $h->getIdMenu(); ?>" class="btn btn-sm btn-outline-danger"
+                                                    onclick="return confirm('Eliminar sub-sección y archivos asociados de forma permanente? Esta acción no se puede deshacer.');">
+                                                    Eliminar
+                                                </a>
                                             </div>
                                         </li>
                                     <?php endforeach; ?>
@@ -216,11 +215,10 @@ include_once dirname(__DIR__, 1) . '/estructura/cabecera.php';
         </div>
         <div class="card-body">
             <?php
-            // Aseguramos que la variable exista y contenga un array (evita warnings)
             if (!isset($abmProducto)) {
                 $abmProducto = new AbmProducto();
             }
-            $todosLosProductos = $abmProducto->listar() ?? []; // si listar() devuelve null, lo convertimos a array vacío
+            $todosLosProductos = $abmProducto->listar() ?? [];
             ?>
 
             <?php if (empty($todosLosProductos)): ?>
@@ -243,7 +241,6 @@ include_once dirname(__DIR__, 1) . '/estructura/cabecera.php';
                                     <td><?= $prod->getIdProducto(); ?></td>
                                     <td><strong><?= htmlspecialchars($prod->getProNombre()); ?></strong></td>
 
-                                    <!-- DETALLE EDITABLE (precio de los productos) -->
                                     <td>
                                         <input type="text"
                                             class="form-control form-control-sm"
@@ -252,7 +249,6 @@ include_once dirname(__DIR__, 1) . '/estructura/cabecera.php';
                                             onblur="actualizarDetalle(<?= $prod->getIdProducto(); ?>, this.value)">
                                     </td>
 
-                                    <!-- STOCK -->
                                     <td class="text-center">
                                         <span class="badge fs-6 <?= $prod->getProCantStock() <= 0 ? 'bg-danger' : ($prod->getProCantStock() <= 5 ? 'bg-warning text-dark' : 'bg-success') ?>">
                                             <?= $prod->getProCantStock(); ?>
@@ -282,76 +278,63 @@ include_once dirname(__DIR__, 1) . '/estructura/cabecera.php';
             <?php endif; ?>
         </div>
     </div>
-
-
 </div>
-</div>
+
 <script>
-    // Función para +1 o -1
+    // JS: stock + mensajes (igual que antes)
     function cambiarStock(id, cambio) {
         fetch(`accion/accionStockAjax.php`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `id=${id}&cambio=${cambio}`
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    const fila = document.querySelector(`tr[data-id="${id}"]`);
-                    const badge = fila.querySelector('.badge');
-                    const input = fila.querySelector('input[type="number"]');
-                    const btnMenos = fila.querySelector('button[title="-1"]');
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `id=${id}&cambio=${cambio}`
+        }).then(r => r.json()).then(data => {
+            if (data.success) {
+                const fila = document.querySelector(`tr[data-id="${id}"]`);
+                const badge = fila.querySelector('.badge');
+                const input = fila.querySelector('input[type="number"]');
+                const btnMenos = fila.querySelector('button[title="-1"]');
 
-                    // Actualizar badge y input
-                    badge.textContent = data.nuevoStock;
-                    input.value = data.nuevoStock;
+                badge.textContent = data.nuevoStock;
+                input.value = data.nuevoStock;
 
-                    // Cambiar color del badge
-                    badge.classList.remove('bg-danger', 'bg-warning', 'bg-success', 'text-dark');
-                    if (data.nuevoStock <= 0) {
-                        badge.classList.add('bg-danger');
-                        btnMenos.disabled = true;
-                    } else if (data.nuevoStock <= 5) {
-                        badge.classList.add('bg-warning', 'text-dark');
-                        btnMenos.disabled = false;
-                    } else {
-                        badge.classList.add('bg-success');
-                        btnMenos.disabled = false;
-                    }
-
-                    // Mensaje flotante
-                    mostrarMensaje('Stock actualizado', 'success');
+                badge.classList.remove('bg-danger', 'bg-warning', 'bg-success', 'text-dark');
+                if (data.nuevoStock <= 0) {
+                    badge.classList.add('bg-danger');
+                    btnMenos.disabled = true;
+                } else if (data.nuevoStock <= 5) {
+                    badge.classList.add('bg-warning', 'text-dark');
+                    btnMenos.disabled = false;
+                } else {
+                    badge.classList.add('bg-success');
+                    btnMenos.disabled = false;
                 }
-            });
+                mostrarMensaje('Stock actualizado', 'success');
+            }
+        });
     }
 
-    // Actualizar con el input directo
     function actualizarStockDirecto(id, valor) {
         const nuevo = parseInt(valor);
         if (isNaN(nuevo) || nuevo < 0) return;
-
         fetch(`accion/accionStockAjax.php`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `id=${id}&stock=${nuevo}`
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    const fila = document.querySelector(`tr[data-id="${id}"]`);
-                    const badge = fila.querySelector('.badge');
-                    badge.textContent = data.nuevoStock;
-                    badge.className = 'badge fs-6 ' + (data.nuevoStock <= 0 ? 'bg-danger' : data.nuevoStock <= 5 ? 'bg-warning text-dark' : 'bg-success');
-                    mostrarMensaje('Stock actualizado', 'success');
-                }
-            });
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `id=${id}&stock=${nuevo}`
+        }).then(r => r.json()).then(data => {
+            if (data.success) {
+                const fila = document.querySelector(`tr[data-id="${id}"]`);
+                const badge = fila.querySelector('.badge');
+                badge.textContent = data.nuevoStock;
+                badge.className = 'badge fs-6 ' + (data.nuevoStock <= 0 ? 'bg-danger' : data.nuevoStock <= 5 ? 'bg-warning text-dark' : 'bg-success');
+                mostrarMensaje('Stock actualizado', 'success');
+            }
+        });
     }
 
-    // Mensaje flotante bonito
     function mostrarMensaje(texto, tipo = 'success') {
         const msg = document.getElementById('mensajeAjax');
         msg.textContent = texto;
@@ -361,24 +344,17 @@ include_once dirname(__DIR__, 1) . '/estructura/cabecera.php';
 
     function actualizarDetalle(id, detalle) {
         fetch(`accion/accionStockAjax.php`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `id=${id}&detalle=${encodeURIComponent(detalle)}`
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    mostrarMensaje('Detalle actualizado', 'success');
-                } else {
-                    mostrarMensaje('Error al actualizar detalle', 'danger');
-                }
-            });
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `id=${id}&detalle=${encodeURIComponent(detalle)}`
+        }).then(r => r.json()).then(data => {
+            if (data.success) mostrarMensaje('Detalle actualizado', 'success');
+            else mostrarMensaje('Error al actualizar detalle', 'danger');
+        });
     }
-</script>
 
-<script>
     document.getElementById("tipo").addEventListener("change", function() {
         document.getElementById("bloquePadre").style.display =
             (this.value === "sub") ? "block" : "none";

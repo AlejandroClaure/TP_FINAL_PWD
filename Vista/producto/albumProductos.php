@@ -12,8 +12,8 @@ include_once $GLOBALS['CONTROL_PATH'] . 'AbmProducto.php';
 $abmProducto = new AbmProducto();
 
 // 🔥 Ahora solo carga los productos habilitados
-if (method_exists($abmProducto, 'listarHabilitados')) {
-    $productos = $abmProducto->listarHabilitados();
+if (method_exists($abmProducto, 'listar')) {
+    $productos = $abmProducto->listar();
 } else {
     // fallback si todavía no creó la función
     $productos = $abmProducto->listar("prodeshabilitado IS NULL");
@@ -33,67 +33,91 @@ $imgDir     = dirname(__DIR__, 1) . "/imagenes/productos/";
 
         <?php foreach ($productos as $prod): ?>
 
-            <?php
-            // Nombre completo y visible
-            $nombreCompleto  = $prod->getProNombre();
-            $partes          = explode('_', $nombreCompleto);
-            $nombreReal      = end($partes);
-            $nombreVisible   = str_replace('_', ' ', $nombreReal);
+    <?php
+    // Nombre completo y visible
+    $nombreCompleto  = $prod->getProNombre();
+    $partes          = explode('_', $nombreCompleto);
+    $nombreReal      = end($partes);
+    $nombreVisible   = str_replace('_', ' ', $nombreReal);
 
-            // Imagen desde BD
-            $imagenBD = $prod->getProimagen();
+    // Imagen desde BD
+    $imagenBD = $prod->getProimagen();
 
-            // Verificar imagen física
-            if ($imagenBD && file_exists($imgDir . $imagenBD)) {
-                $imagenURL = $imgBaseUrl . $imagenBD;
-            } else {
-                $imagenURL = $imgBaseUrl . "no-image.jpeg";
-            }
+    if ($imagenBD && file_exists($imgDir . $imagenBD)) {
+        $imagenURL = $imgBaseUrl . $imagenBD;
+    } else {
+        $imagenURL = $imgBaseUrl . "no-image.jpeg";
+    }
 
-            // Precio
-            $precio = (float) $prod->getProPrecio();
+    // Precios
+    $precioNormal = (float) $prod->getProPrecio();
+    $precioFinal  = (float) $prod->getPrecioFinal();
 
-            // Stock
-            $stock = (int) $prod->getProCantStock();
-            ?>
+    // Oferta
+    $descuento     = (int) $prod->getProoferta();
+    $finOferta     = $prod->getProFinOffer();
+    $hayOferta     = $descuento > 0 && (!$finOferta || strtotime($finOferta) >= time());
 
-            <div class="col-md-4 col-lg-3">
-                <div class="card shadow-sm h-100 product-card">
+    // Stock
+    $stock = (int) $prod->getProCantStock();
+    ?>
 
-                    <img src="<?= htmlspecialchars($imagenURL, ENT_QUOTES); ?>"
-                         class="card-img-top producto-img"
-                         alt="<?= htmlspecialchars($nombreVisible); ?>"
-                         onerror="this.src='<?= $imgBaseUrl; ?>no-image.jpeg';">
+    <div class="col-md-4 col-lg-3">
+        <div class="card shadow-sm h-100 product-card">
 
-                    <div class="card-body">
+            <img src="<?= htmlspecialchars($imagenURL); ?>"
+                 class="card-img-top producto-img"
+                 alt="<?= htmlspecialchars($nombreVisible); ?>"
+                 onerror="this.src='<?= $imgBaseUrl; ?>no-image.jpeg';">
 
-                        <h5 class="card-title">
-                            <?= htmlspecialchars($nombreVisible); ?>
-                        </h5>
+            <div class="card-body">
 
-                        <p class="text-success fw-bold fs-5">
-                            $<?= number_format($precio, 2, ',', '.'); ?>
-                        </p>
+                <h5 class="card-title">
+                    <?= htmlspecialchars($nombreVisible); ?>
+                </h5>
 
-                        <p class="card-text small text-muted">
-                            <?= $prod->getProdetalle(); ?>
-                        </p>
+                <!-- PRECIO -->
+                <?php if ($hayOferta): ?>
+                    <p class="text-danger fw-bold fs-5">
+                        $<?= number_format($precioFinal, 2, ',', '.'); ?>
+                        <span class="badge bg-danger ms-2">-<?= $descuento ?>%</span>
+                    </p>
+                    <p class="text-muted text-decoration-line-through">
+                        $<?= number_format($precioNormal, 2, ',', '.'); ?>
+                    </p>
 
-                        <p class="text-muted">
-                            Stock: <?= $stock; ?>
-                        </p>
+                    <?php if ($finOferta): ?>
+                        <small class="text-muted">
+                            Oferta válida hasta: <?= date("d/m/Y", strtotime($finOferta)); ?>
+                        </small>
+                    <?php endif; ?>
 
-                        <a href="<?= $GLOBALS['VISTA_URL']; ?>compra/accion/agregarCarrito.php?id=<?= $prod->getIdProducto(); ?>"
-                           class="btn btn-warning w-100 <?= $stock <= 0 ? 'disabled' : ''; ?>">
-                            <i class="fa fa-shopping-cart"></i>
-                            <?= $stock > 0 ? 'Agregar al carrito' : 'Sin stock'; ?>
-                        </a>
+                <?php else: ?>
+                    <p class="text-success fw-bold fs-5">
+                        $<?= number_format($precioNormal, 2, ',', '.'); ?>
+                    </p>
+                <?php endif; ?>
 
-                    </div>
-                </div>
+                <p class="card-text small text-muted">
+                    <?= $prod->getProdetalle(); ?>
+                </p>
+
+                <p class="text-muted">
+                    Stock: <?= $stock; ?>
+                </p>
+
+                <a href="<?= $GLOBALS['VISTA_URL']; ?>compra/accion/agregarCarrito.php?id=<?= $prod->getIdProducto(); ?>"
+                   class="btn btn-warning w-100 <?= $stock <= 0 ? 'disabled' : ''; ?>">
+                    <i class="fa fa-shopping-cart"></i>
+                    <?= $stock > 0 ? 'Agregar al carrito' : 'Sin stock'; ?>
+                </a>
+
             </div>
+        </div>
+    </div>
 
-        <?php endforeach; ?>
+<?php endforeach; ?>
+
 
     <?php endif; ?>
 

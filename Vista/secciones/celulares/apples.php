@@ -4,7 +4,7 @@ include_once $GLOBALS['VISTA_PATH'] . "estructura/cabecera.php";
 
 $abmProducto = new AbmProducto();
 
-$prefijoCategoria = strtolower(str_replace("/", "_", str_replace(".php","", "celulares.php"))) . "_";
+$prefijoCategoria = strtolower(str_replace("/", "_", str_replace(".php","", "celulares/apple.php"))) . "_";
 
 $productos = $abmProducto->listar();
 
@@ -35,7 +35,7 @@ foreach ($productos as $p) {
 ?>
 
 <div class='container mt-4 pt-4'>
-    <h1 class='mb-4'><?= htmlspecialchars("celulares") ?></h1>
+    <h1 class='mb-4'>Apples</h1>
 
     <div class='row g-3'>
         <?php if (empty($productosFiltrados)): ?>

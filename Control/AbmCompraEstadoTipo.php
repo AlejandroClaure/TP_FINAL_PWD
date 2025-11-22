@@ -1,9 +1,32 @@
 <?php
 
-class AbmCompraEstadoTipo {
+class AbmCompraEstadoTipo
+{
 
-    public function alta($datos) {
-        $resp = false;
+    public function alta($datos)
+    {
+        $obj = new CompraEstadoTipo();
+        $obj->setear(
+            $datos["idcompraestadotipo"],
+            $datos["cetdescripcion"],
+            $datos["cetdetalle"]
+        );
+        return $obj->insertar();
+    }
+
+    public function baja($datos)
+    {
+        if (!isset($datos["idcompraestadotipo"])) return false;
+
+        $obj = new CompraEstadoTipo();
+        $obj->setIdCompraEstadoTipo($datos["idcompraestadotipo"]);
+
+        return $obj->eliminar();
+    }
+
+    public function modificacion($datos)
+    {
+        if (!isset($datos["idcompraestadotipo"])) return false;
 
         $obj = new CompraEstadoTipo();
         $obj->setear(
@@ -12,52 +35,17 @@ class AbmCompraEstadoTipo {
             $datos["cetdetalle"]
         );
 
-        if ($obj->insertar()) $resp = true;
-
-        return $resp;
+        return $obj->modificar();
     }
 
-    public function baja($datos) {
-        $resp = false;
-
-        if (isset($datos["idcompraestadotipo"])) {
-            $obj = new CompraEstadoTipo();
-            $obj->setIdCompraEstadoTipo($datos["idcompraestadotipo"]);
-
-            if ($obj->eliminar()) $resp = true;
-        }
-
-        return $resp;
-    }
-
-    public function modificacion($datos) {
-        $resp = false;
-
-        if (isset($datos["idcompraestadotipo"])) {
-            $obj = new CompraEstadoTipo();
-            $obj->setear(
-                $datos["idcompraestadotipo"],
-                $datos["cetdescripcion"],
-                $datos["cetdetalle"]
-            );
-
-            if ($obj->modificar()) $resp = true;
-        }
-
-        return $resp;
-    }
-
-    public function buscar($param = null) {
+    public function buscar($param = null)
+    {
         $where = " true ";
 
-        if ($param != null) {
-
-            if (isset($param["idcompraestadotipo"]))
-                $where .= " AND idcompraestadotipo = " . $param["idcompraestadotipo"];
+        if ($param != null && isset($param["idcompraestadotipo"])) {
+            $where .= " AND idcompraestadotipo = " . $param["idcompraestadotipo"];
         }
 
-        $obj = new CompraEstadoTipo();
-        return $obj->listar($where);
+        return (new CompraEstadoTipo())->listar($where);
     }
 }
-?>

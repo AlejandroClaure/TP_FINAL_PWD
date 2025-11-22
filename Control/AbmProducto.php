@@ -3,9 +3,10 @@ include_once dirname(__DIR__) . '/Modelo/Producto.php';
 
 class AbmProducto
 {
-    // ==================
+
+    // ======================================================
     // CREAR
-    // ==================
+    // ======================================================
     public function crear($datos)
     {
         $pronombre     = trim($datos['pronombre'] ?? '');
@@ -20,9 +21,9 @@ class AbmProducto
             return false;
         }
 
-        // ==============================
+        // ======================================================
         // SUBIR IMAGEN
-        // ==============================
+        // ======================================================
         $imagenNombre = null;
 
         if ($archivoImg && !empty($archivoImg['name'])) {
@@ -49,9 +50,9 @@ class AbmProducto
             }
         }
 
-        // ==============================
+        // ======================================================
         // CADENA DE CATEGORÍAS
-        // ==============================
+        // ======================================================
         $abmMenu = new AbmMenu();
         $menus = $abmMenu->buscar(['menombre' => $categoria]);
 
@@ -72,46 +73,52 @@ class AbmProducto
 
         $nombreFinal = $prefijo . $pronombre;
 
-        // ==============================
-        // GUARDAR EN BD
-        // ==============================
+        // ======================================================
+        // INSERTAR PRODUCTO (10 ARGUMENTOS)
+        // ======================================================
         $obj = new Producto();
         $obj->setear(
-            0,
-            $nombreFinal,
-            $prodetalle,
-            $proprecio,
-            $procantstock,
-            null,              // prodeshabilitado
-            $idusuario,
-            $imagenNombre
+            0,                  // idproducto
+            $nombreFinal,       // pronombre
+            $prodetalle,        // prodetalle
+            $proprecio,         // proprecio
+            $procantstock,      // procantstock
+            0,                  // prooferta
+            null,               // profinoffer
+            null,               // prodeshabilitado
+            $idusuario,         // idusuario
+            $imagenNombre       // proimagen
         );
 
         return $obj->insertar();
     }
 
-    // ==================
+    // ======================================================
     // MODIFICAR
-    // ==================
+    // ======================================================
     public function modificar($param)
     {
         $obj = new Producto();
+
         $obj->setear(
             $param['idproducto'],
             $param['pronombre'],
-            $param['prodetalle'],
+            $param['prodetalle'] ?? "",
             $param['proprecio'],
             $param['procantstock'],
-            null,
+            $param['prooferta'] ?? 0,
+            $param['profinoffer'] ?? null,
+            null, // prodeshabilitado NO se modifica aquí
             $param['idusuario'],
             $param['proimagen'] ?? null
         );
+
         return $obj->modificar();
     }
 
-    // ==================
-    // DESHABILITAR (BAJA LÓGICA)
-    // ==================
+    // ======================================================
+    // ELIMINAR (BAJA LÓGICA)
+    // ======================================================
     public function eliminar($id)
     {
         $obj = new Producto();
@@ -119,9 +126,9 @@ class AbmProducto
         return $obj->deshabilitar();
     }
 
-    // ==================
+    // ======================================================
     // HABILITAR
-    // ==================
+    // ======================================================
     public function habilitar($id)
     {
         $obj = new Producto();
@@ -129,28 +136,27 @@ class AbmProducto
         return $obj->habilitar();
     }
 
-
-    // ==================
-    // LISTAR SOLO HABILITADOS
-    // ==================
+    // ======================================================
+    // LISTAR HABILITADOS
+    // ======================================================
     public function listar()
     {
         $obj = new Producto();
         return $obj->listar("prodeshabilitado IS NULL");
     }
 
-    // ==================
+    // ======================================================
     // LISTAR POR USUARIO
-    // ==================
+    // ======================================================
     public function listarPorUsuario($idusuario)
     {
         $obj = new Producto();
         return $obj->listar("idusuario = $idusuario AND prodeshabilitado IS NULL");
     }
 
-    // ==================
+    // ======================================================
     // BUSCAR POR ID
-    // ==================
+    // ======================================================
     public function buscarPorId($id)
     {
         $obj = new Producto();
@@ -159,9 +165,9 @@ class AbmProducto
         return $obj;
     }
 
-    // ==================
+    // ======================================================
     // BUSCAR POR PRIMERA PALABRA
-    // ==================
+    // ======================================================
     public function buscarPorNombrePrimeraPalabra($palabra)
     {
         $obj = new Producto();
@@ -174,15 +180,7 @@ class AbmProducto
                 $filtrados[] = $prod;
             }
         }
-
         return $filtrados;
     }
-    // ============================
-    // LISTAR PRODUCTOS HABILITADOS
-    // ============================
-    public function listarHabilitados()
-{
-    $obj = new Producto();
-    return $obj->listar("prodeshabilitado IS NULL");
-}
+
 }

@@ -1,74 +1,56 @@
 <?php
 
-class AbmCompra {
+class AbmCompra
+{
 
-    public function alta($datos) {
-        $resp = false;
+    public function alta($datos)
+    {
+        $obj = new Compra();
+        $obj->setear(
+            0,
+            $datos["cofecha"],
+            $datos["idusuario"]
+        );
+        return $obj->insertar();
+    }
+
+    public function baja($datos)
+    {
+        if (!isset($datos["idcompra"])) return false;
+
+        $obj = new Compra();
+        $obj->setIdCompra($datos["idcompra"]);
+        return $obj->eliminar();
+    }
+
+    public function modificacion($datos)
+    {
+        if (!isset($datos["idcompra"])) return false;
 
         $obj = new Compra();
         $obj->setear(
-            0,                              // ID auto_increment
+            $datos["idcompra"],
             $datos["cofecha"],
             $datos["idusuario"]
         );
 
-        if ($obj->insertar()) {
-            $resp = true;
-        }
-
-        return $resp;
+        return $obj->modificar();
     }
 
-
-    public function baja($datos) {
-        $resp = false;
-
-        if (isset($datos["idcompra"])) {
-            $obj = new Compra();
-            $obj->setIdCompra($datos["idcompra"]);
-
-            if ($obj->eliminar()) {
-                $resp = true;
-            }
-        }
-
-        return $resp;
-    }
-
-
-    public function modificacion($datos) {
-        $resp = false;
-
-        if (isset($datos["idcompra"])) {
-            $obj = new Compra();
-            $obj->setear(
-                $datos["idcompra"],
-                $datos["cofecha"],
-                $datos["idusuario"]
-            );
-
-            if ($obj->modificar()) {
-                $resp = true;
-            }
-        }
-
-        return $resp;
-    }
-
-
-    public function buscar($param = null) {
+    public function buscar($param = null)
+    {
         $where = " true ";
 
-        if ($param != null) {
-            if (isset($param["idcompra"]))
+        if ($param !== null) {
+            if (isset($param["idcompra"])) {
                 $where .= " AND idcompra = " . $param["idcompra"];
-
-            if (isset($param["idusuario"]))
+            }
+            if (isset($param["idusuario"])) {
                 $where .= " AND idusuario = " . $param["idusuario"];
+            }
         }
 
         $obj = new Compra();
         return $obj->listar($where);
     }
 }
-?>

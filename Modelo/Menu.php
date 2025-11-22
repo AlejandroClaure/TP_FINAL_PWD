@@ -142,34 +142,35 @@ class Menu extends BaseDatos
 
     // ======== INSERTAR ========
 
-    public function insertar() {
-    $idpadre = (!empty($this->objmenupadre))
-        ? (is_object($this->objmenupadre) ? $this->objmenupadre->getIdMenu() : intval($this->objmenupadre))
-        : "NULL";
+    public function insertar()
+    {
+        $idpadre = (!empty($this->objmenupadre))
+            ? (is_object($this->objmenupadre) ? $this->objmenupadre->getIdMenu() : intval($this->objmenupadre))
+            : "NULL";
 
-    $melink = !empty($this->melink) ? "'{$this->melink}'" : "NULL";
-    $deshab = !empty($this->medeshabilitado) ? "'{$this->medeshabilitado}'" : "NULL";
-    $descripcion = $this->medescripcion ?? "";
+        $melink = !empty($this->melink) ? "'{$this->melink}'" : "NULL";
+        $deshab = !empty($this->medeshabilitado) ? "'{$this->medeshabilitado}'" : "NULL";
+        $descripcion = $this->medescripcion ?? "";
 
-    $sql = "INSERT INTO menu (menombre, melink, idpadre, medescripcion, medeshabilitado)
+        $sql = "INSERT INTO menu (menombre, melink, idpadre, medescripcion, medeshabilitado)
             VALUES ('{$this->menombre}', {$melink}, {$idpadre}, '{$descripcion}', {$deshab})";
 
-    if ($this->Iniciar()) {
-        $id = $this->Ejecutar($sql);
-        if ($id) {
-            $this->idmenu = $id;
-            return true;
+        if ($this->Iniciar()) {
+            $id = $this->Ejecutar($sql);
+            if ($id) {
+                $this->idmenu = $id;
+                return true;
+            } else {
+                $this->mensajeoperacion = "menu->insertar: " . $this->getError();
+                error_log($this->mensajeoperacion); // log para depuración
+            }
         } else {
-            $this->mensajeoperacion = "menu->insertar: " . $this->getError();
-            error_log($this->mensajeoperacion); // log para depuración
+            $this->mensajeoperacion = "menu->insertar: no se pudo iniciar BD";
+            error_log($this->mensajeoperacion);
         }
-    } else {
-        $this->mensajeoperacion = "menu->insertar: no se pudo iniciar BD";
-        error_log($this->mensajeoperacion);
-    }
 
-    return false;
-}
+        return false;
+    }
 
 
 
@@ -180,41 +181,41 @@ class Menu extends BaseDatos
 
     public function modificar()
     {
-
         $idpadre = "NULL";
-
-        if (!empty($this->objmenupadre)) {
-
-            if (!is_object($this->objmenupadre)) {
-                $padreObj = new Menu();
-                $padreObj->setIdMenu(intval($this->objmenupadre));
-                $padreObj->cargar();
-                $this->objmenupadre = $padreObj;
-            }
-
+        if ($this->objmenupadre !== null && $this->objmenupadre instanceof Menu) {
             $idpadre = $this->objmenupadre->getIdMenu();
         }
 
         $menombre = addslashes($this->menombre);
         $melink = addslashes($this->melink);
         $medescripcion = addslashes($this->medescripcion);
+        $medeshabilitado = empty($this->medeshabilitado) ? "NULL" : "'" . addslashes($this->medeshabilitado) . "'";
 
-        $sql = "
-            UPDATE menu SET
+        $sql = "UPDATE menu SET
                 menombre = '$menombre',
                 melink = '$melink',
                 idpadre = $idpadre,
                 medescripcion = '$medescripcion',
-                medeshabilitado = " . (empty($this->medeshabilitado) ? "NULL" : "'{$this->medeshabilitado}'") . "
-            WHERE idmenu = {$this->idmenu}
-        ";
+                medeshabilitado = $medeshabilitado
+            WHERE idmenu = {$this->idmenu}";
 
         if ($this->Iniciar()) {
-            return $this->Ejecutar($sql) !== false;
+            $res = $this->Ejecutar($sql);
+            if ($res === false) {
+                $this->mensajeoperacion = "menu->modificar: " . $this->getError();
+                error_log($this->mensajeoperacion);
+                return false;
+            }
+            return true;
+        } else {
+            $this->mensajeoperacion = "menu->modificar: no se pudo iniciar BD";
+            error_log($this->mensajeoperacion);
+            return false;
         }
-
-        return false;
     }
+
+
+
 
 
     // ======== ELIMINAR ========

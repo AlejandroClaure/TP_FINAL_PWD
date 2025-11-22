@@ -141,48 +141,91 @@ foreach ($menus as $m) {
 <!-- MENÚ LATERAL -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu">
     <div class="offcanvas-header">
-        <h5><i class="fa fa-bars me-1"></i> Menú</h5>
+        <h5 class="fw-bold">
+            <i class="fa fa-bars me-2"></i> Categorías
+        </h5>
         <button class="btn-close" data-bs-dismiss="offcanvas"></button>
     </div>
 
     <div class="offcanvas-body">
+
         <?php if (!empty($menusPadre)): ?>
-            <ul class="list-group">
 
+            <?php
+            /* -----------------------------------------------------
+               🔁 Función RECURSIVA — puro Bootstrap collapse
+            ----------------------------------------------------- */
+            function menuBootstrap($menu, $hijos, $nivel = 0) {
+
+                $id = $menu->getIdMenu();
+                $hasChildren = !empty($hijos[$id]);
+                $padding = $nivel * 2; // p-2, p-4, p-6...
+
+                echo "<div class='mb-1 ps-$padding'>";
+
+                /* ---------- ENCABEZADO DE LA CATEGORÍA ---------- */
+                if ($hasChildren) {
+                    echo "
+                        <a class='d-flex justify-content-between align-items-center text-dark text-decoration-none'
+                           data-bs-toggle='collapse'
+                           href='#collapse-$id'
+                           role='button'
+                           aria-expanded='false'>
+                            <span>
+                                <i class='fa fa-folder-open me-2 text-warning'></i>
+                                " . htmlspecialchars($menu->getMeNombre()) . "
+                            </span>
+                            <i class='fa fa-chevron-down'></i>
+                        </a>
+                    ";
+                } else {
+                    echo "
+                        <span class='d-flex align-items-center'>
+                            <i class='fa fa-folder me-2 text-secondary'></i>
+                            " . htmlspecialchars($menu->getMeNombre()) . "
+                        </span>
+                    ";
+                }
+
+                /* ---------- ENLACE VER TODO ---------- */
+                echo "
+                    <div class='ms-4'>
+                        <a href='{$GLOBALS['VISTA_URL']}secciones/{$menu->getMeLink()}'
+                           class='small text-primary text-decoration-none'>
+                            Ver todo " . htmlspecialchars($menu->getMeNombre()) . "
+                        </a>
+                    </div>
+                ";
+
+                /* ---------- HIJOS ---------- */
+                if ($hasChildren) {
+                    echo "<div class='collapse mt-1' id='collapse-$id'>";
+
+                    foreach ($hijos[$id] as $hijo) {
+                        menuBootstrap($hijo, $hijos, $nivel + 1);
+                    }
+
+                    echo "</div>";
+                }
+
+                echo "</div>";
+            }
+            ?>
+
+            <!-- Contenedor general -->
+            <div>
                 <?php foreach ($menusPadre as $padre): ?>
-                    <li class="list-group-item">
-
-                        <!-- Nombre categoría padre -->
-                        <strong><?= htmlspecialchars($padre->getMeNombre()); ?></strong>
-
-                        <!-- "Ver todo" -->
-                        <div class="mb-1">
-                            <a href="<?= $GLOBALS['VISTA_URL']; ?>secciones/<?= $padre->getMeLink(); ?>" class="text-decoration-none small">
-                                Ver todo <?= htmlspecialchars($padre->getMeNombre()); ?>
-                            </a>
-                        </div>
-
-                        <?php if (!empty($menusHijos[$padre->getIdMenu()])): ?>
-                            <ul class="list-group ms-3 mt-1">
-                                <?php foreach ($menusHijos[$padre->getIdMenu()] as $hijo): ?>
-                                    <li class="list-group-item py-1">
-                                        <a href="<?= $GLOBALS['VISTA_URL']; ?>secciones/<?= $hijo->getMeLink(); ?>" class="text-decoration-none">
-                                            <?= htmlspecialchars($hijo->getMeNombre()); ?>
-                                        </a>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        <?php endif; ?>
-
-                    </li>
+                    <?php menuBootstrap($padre, $menusHijos); ?>
                 <?php endforeach; ?>
+            </div>
 
-            </ul>
         <?php else: ?>
             <p class="text-muted">No hay secciones aún.</p>
         <?php endif; ?>
+
     </div>
 </div>
+
 
 
    <div style="padding-top: 60px;"></div>

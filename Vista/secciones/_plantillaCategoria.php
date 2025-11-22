@@ -1,13 +1,17 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/PWD_TPFinal/configuracion.php";
+
 include_once $GLOBALS['VISTA_PATH'] . "estructura/cabecera.php";
 
 $abmProducto = new AbmProducto();
 
-$prefijoCategoria = strtolower(str_replace("/", "_", str_replace(".php","", "celulares.php"))) . "_";
+// Prefijo de categoría
+$prefijoCategoria = strtolower(str_replace("/", "_", str_replace(".php","", "__RUTA__"))) . "_";
 
-$productos = $abmProducto->listar();
+// Listar productos
+$productos = $abmProducto->listar("prodeshabilitado IS NULL");
 
+// Normalizar nombres
 function normalizar_nombre_img($nombre) {
     $tmp = mb_strtolower(trim($nombre), "UTF-8");
     $tmp = iconv("UTF-8","ASCII//TRANSLIT", $tmp) ?: $tmp;
@@ -18,8 +22,10 @@ function normalizar_nombre_img($nombre) {
 $imgBaseUrl = $GLOBALS['VISTA_URL'] . "imagenes/productos/";
 $imgDir     = $GLOBALS['VISTA_PATH'] . "imagenes/productos/";
 
+// Filtrar productos
 $productosFiltrados = [];
 foreach ($productos as $p) {
+
     $nombreBD = strtolower($p->getProNombre());
     if (!str_starts_with($nombreBD, $prefijoCategoria)) continue;
 
@@ -33,9 +39,8 @@ foreach ($productos as $p) {
     ];
 }
 ?>
-
 <div class='container mt-4 pt-4'>
-    <h1 class='mb-4'><?= htmlspecialchars("celulares") ?></h1>
+    <h1 class='mb-4'><?= htmlspecialchars("__NOMBRE__") ?></h1>
 
     <div class='row g-3'>
         <?php if (empty($productosFiltrados)): ?>
@@ -47,8 +52,8 @@ foreach ($productos as $p) {
 
                 $imagenBD = $p->getProImagen();
                 $imagenURL = (!$imagenBD || !file_exists($imgDir . $imagenBD))
-                                ? $imgBaseUrl . "no-image.jpeg"
-                                : $imgBaseUrl . $imagenBD;
+                              ? $imgBaseUrl . "no-image.jpeg"
+                              : $imgBaseUrl . $imagenBD;
 
                 $precio = (float) $p->getProPrecio();
                 $stock  = (int) $p->getProCantStock();
@@ -58,7 +63,7 @@ foreach ($productos as $p) {
                     <img src='<?= $imagenURL ?>' class='card-img-top' alt='<?= htmlspecialchars($nombreReal) ?>'>
                     <div class='card-body'>
                         <h5 class='card-title'><?= htmlspecialchars($nombreReal) ?></h5>
-                        <p class='text-success fw-bold fs-5'>$<?= number_format($precio, 2, ',', '.') ?></p>
+                        <p class='text-success fw-bold fs-5'>\$<?= number_format($precio, 2, ',', '.') ?></p>
 
                         <p class='small text-muted'>
                             <?= nl2br(htmlspecialchars($p->getProDetalle())) ?>
@@ -68,7 +73,7 @@ foreach ($productos as $p) {
 
                         <a href='<?= $GLOBALS['VISTA_URL'] ?>compra/accion/agregarCarrito.php?id=<?= $p->getIdProducto() ?>'
                            class='btn btn-warning w-100 <?= $stock <= 0 ? "disabled" : "" ?>'>
-                           <?= $stock > 0 ? "Agregar al carrito" : "Sin stock" ?>
+                            <?= $stock > 0 ? "Agregar al carrito" : "Sin stock" ?>
                         </a>
                     </div>
                 </div>

@@ -11,13 +11,29 @@ if (!$session->activa()) {
     exit;
 }
 
+// ===============================
+// CARRITO EN SESIÓN
+// ===============================
 if (!isset($_SESSION['carrito'])) {
     $_SESSION['carrito'] = [];
 }
 $carrito =& $_SESSION['carrito'];
 
 
-// Funciones auxiliares
+// ===============================
+// DETECCIÓN DE IMÁGENES
+// ===============================
+$imgDir = $GLOBALS['VISTA_PATH'] . "imagenes/productos/";
+$imgBaseUrl = $GLOBALS['VISTA_URL'] . "imagenes/productos/";
+
+if (!is_dir($imgDir)) {
+    mkdir($imgDir, 0777, true);
+}
+
+
+// ===============================
+// FUNCIONES
+// ===============================
 function normalizar_nombre_img($nombre) {
     $tmp = trim($nombre);
     $tmp = mb_strtolower($tmp, 'UTF-8');
@@ -27,78 +43,91 @@ function normalizar_nombre_img($nombre) {
     return $tmp;
 }
 
-function detectar_imagenes_ruta_base() {
-    $candidatos = [
-        dirname(__DIR__, 2) . '/imagenes/',
-        dirname(__DIR__) . '/imagenes/',
-        dirname(__DIR__, 3) . '/Vista/imagenes/',
-        dirname(__DIR__, 4) . '/Vista/imagenes/',
-    ];
-    foreach ($candidatos as $cand) {
-        $real = @realpath($cand);
-        if ($real && is_dir($real)) {
-            return ['dir' => $real . '/', 'baseUrl' => '/PWD_TPFinal/Vista/imagenes/'];
-        }
-    }
-    $gImg = $GLOBALS['IMG_URL'] ?? '/PWD_TPFinal/Vista/imagenes/';
-    $gDir = dirname(__DIR__, 2) . '/imagenes/';
-    return ['dir' => $gDir, 'baseUrl' => $gImg];
-}
 
-$imgInfo = detectar_imagenes_ruta_base();
-$imgDir = rtrim($imgInfo['dir'], '/') . '/';
-$imgBaseUrl = rtrim($imgInfo['baseUrl'], '/') . '/';
-
-
-// Modificar cantidad
+// ===============================
+// MODIFICAR CANTIDAD
+// ===============================
 if (isset($_GET['id']) && isset($_GET['accion'])) {
-    $idProducto = $_GET['id'];
+
+    $idProducto = intval($_GET['id']);
     $accion = $_GET['accion'];
 
     $abmProducto = new AbmProducto();
     $producto = $abmProducto->buscarPorId($idProducto);
-    $stock = (int)$producto->getProCantStock();
+
+    if (!$producto) {
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    }
+
+    $precio = floatval($producto->getProPrecio());
+    $stock  = intval($producto->getProCantStock());
+
+    // Nombre real sin las categorías
+    $nombreBD = $producto->getProNombre();
+    $partes = explode("_", $nombreBD);
+    $nombreReal = array_pop($partes);
+
+    // Guardar detalle e imagen
+    $detalle = $producto->getProDetalle();
+    $imagenNombre = $producto->getProImagen();
 
     if ($accion === 'sumar') {
+
         if (!isset($carrito[$idProducto])) {
             $carrito[$idProducto] = [
-                'nombre' => $producto->getProNombre(),
-                'precio' => (float)str_replace(['$', ','], '', $producto->getProDetalle()),
-                'cantidad' => 0
+                'nombre'   => $nombreReal,
+                'precio'   => $precio,
+                'cantidad' => 0,
+                'detalle'  => $detalle,
+                'imagen'   => $imagenNombre
             ];
         }
+
         if ($carrito[$idProducto]['cantidad'] < $stock) {
             $carrito[$idProducto]['cantidad']++;
         }
+
     } elseif ($accion === 'restar') {
+
         if (isset($carrito[$idProducto])) {
             $carrito[$idProducto]['cantidad']--;
+
             if ($carrito[$idProducto]['cantidad'] <= 0) {
                 unset($carrito[$idProducto]);
             }
         }
     }
+
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
 
 
-// Eliminar producto
+// ===============================
+// ELIMINAR PRODUCTO
+// ===============================
 if (isset($_GET['eliminar'])) {
-    $idEliminar = $_GET['eliminar'];
+    $idEliminar = intval($_GET['eliminar']);
+
     if (isset($carrito[$idEliminar])) {
         unset($carrito[$idEliminar]);
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit;
     }
+
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
 }
 
 
-// Totales
+// ===============================
+// TOTALES
+// ===============================
 $subtotal = 0;
+
 foreach ($carrito as $item) {
     $subtotal += floatval($item['precio']) * intval($item['cantidad']);
 }
+
 $envio = $subtotal > 0 ? 5000 : 0;
 $total = $subtotal + $envio;
 
@@ -112,7 +141,9 @@ $total = $subtotal + $envio;
 
     <?php if (empty($carrito)): ?>
         <p class="text-muted">No hay productos en el carrito.</p>
+
     <?php else: ?>
+
         <div class="table-responsive">
             <table class="table align-middle">
                 <thead>
@@ -125,66 +156,77 @@ $total = $subtotal + $envio;
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($carrito as $id => $item): 
-                        $abmProducto = new AbmProducto();
-                        $productoObj = $abmProducto->buscarPorId($id);
-                        $stock = (int)$productoObj->getProCantStock();
 
-                        // Nombre limpio
-                        $nombreBD = $productoObj->getProNombre();
-                        $partes = explode('_', $nombreBD);
-                        $nombreReal = end($partes);
-                        $nombreVisible = str_replace('_', ' ', $nombreReal);
+                <?php foreach ($carrito as $id => $item):
 
-                        // Imagen pequeña
-                        $nombreImg = normalizar_nombre_img($nombreReal);
-                        $extensiones = ['jpg','jpeg','png','webp'];
-                        $imagenURL = $imgBaseUrl . 'no-image.jpeg';
-                        foreach ($extensiones as $ext) {
-                            if (file_exists($imgDir . $nombreImg . '.' . $ext)) {
-                                $imagenURL = $imgBaseUrl . $nombreImg . '.' . $ext;
-                                break;
-                            }
-                        }
-                    ?>
+                    $nombre = htmlspecialchars(str_replace("_", " ", $item['nombre']));
+                    $precio = floatval($item['precio']);
+                    $cantidad = intval($item['cantidad']);
+
+                    // Imagen
+                    if ($item['imagen'] && file_exists($imgDir . $item['imagen'])) {
+                        $imagenURL = $imgBaseUrl . $item['imagen'];
+                    } else {
+                        $imagenURL = $imgBaseUrl . "no-image.jpeg";
+                    }
+
+                    // Stock actual
+                    $abmProducto = new AbmProducto();
+                    $productoObj = $abmProducto->buscarPorId($id);
+                    $stock = intval($productoObj->getProCantStock());
+
+                ?>
                     <tr>
                         <td class="d-flex align-items-center">
-                            <img src="<?= htmlspecialchars($imagenURL); ?>" 
-                                 alt="<?= htmlspecialchars($nombreVisible); ?>" 
-                                 style="width:50px; height:auto; margin-right:10px; object-fit:cover;">
-                            <?= htmlspecialchars($nombreVisible); ?>
+                            <img src="<?= $imagenURL ?>" 
+                                 alt="<?= $nombre ?>" 
+                                 style="width:50px; height:auto; margin-right:10px;">
+                            <?= $nombre ?>
                         </td>
-                        <td>$<?= number_format(floatval($item['precio']), 2, ',', '.'); ?></td>
+
+                        <td>$<?= number_format($precio, 2, ',', '.') ?></td>
+
                         <td>
                             <div class="d-flex align-items-center">
-                                <a href="?id=<?= $id; ?>&accion=restar" class="btn btn-sm btn-secondary me-1">-</a>
-                                <?= intval($item['cantidad']); ?>
-                                <a href="?id=<?= $id; ?>&accion=sumar" 
-                                   class="btn btn-sm btn-secondary ms-1 <?= $item['cantidad'] >= $stock ? 'disabled' : ''; ?>">+</a>
+                                <a href="?id=<?= $id ?>&accion=restar" class="btn btn-sm btn-secondary me-1">-</a>
+
+                                <?= $cantidad ?>
+
+                                <a href="?id=<?= $id ?>&accion=sumar"
+                                   class="btn btn-sm btn-secondary ms-1 <?= $cantidad >= $stock ? 'disabled' : '' ?>">
+                                   +
+                                </a>
                             </div>
-                            <small class="text-muted">Stock: <?= $stock; ?></small>
+                            <small class="text-muted">Stock: <?= $stock ?></small>
                         </td>
-                        <td>$<?= number_format(floatval($item['precio']) * intval($item['cantidad']), 2, ',', '.'); ?></td>
-                        <td><a href="?eliminar=<?= $id; ?>" class="btn btn-danger btn-sm">Eliminar</a></td>
+
+                        <td>$<?= number_format($precio * $cantidad, 2, ',', '.') ?></td>
+
+                        <td>
+                            <a href="?eliminar=<?= $id ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
                     </tr>
-                    <?php endforeach; ?>
+
+                <?php endforeach; ?>
+
                 </tbody>
             </table>
         </div>
 
+
         <div class="mt-4 text-end">
-            <p><strong>Subtotal:</strong> $<?= number_format($subtotal, 2, ',', '.'); ?></p>
-            <p><strong>Envío:</strong> $<?= number_format($envio, 2, ',', '.'); ?></p>
-            <p class="fs-4"><strong>Total:</strong> $<?= number_format($total, 2, ',', '.'); ?></p>
+            <p><strong>Subtotal:</strong> $<?= number_format($subtotal, 2, ',', '.') ?></p>
+            <p><strong>Envío:</strong> $<?= number_format($envio, 2, ',', '.') ?></p>
+            <p class="fs-4"><strong>Total:</strong> $<?= number_format($total, 2, ',', '.') ?></p>
 
             <a href="../producto/producto.php" class="btn btn-dark btn-lg me-2">
                 Seguir Comprando
             </a>
-
             <a href="../compra/finalizarCompra.php" class="btn btn-success btn-lg">
                 Finalizar Compra
             </a>
         </div>
+
     <?php endif; ?>
 </div>
 </main>
