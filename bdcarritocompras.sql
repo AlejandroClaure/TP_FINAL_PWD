@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 23-11-2025 a las 00:34:31
+-- Tiempo de generación: 23-11-2025 a las 04:35:17
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,11 +20,7 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `bdcarritocompras`
 --
--- 1. Create the database if it doesn't exist
-CREATE DATABASE IF NOT EXISTS `bdcarritocompras` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- 2. Select the database for execution
-USE `bdcarritocompras`;
 -- --------------------------------------------------------
 
 --
@@ -42,7 +38,7 @@ CREATE TABLE `compra` (
 --
 
 INSERT INTO `compra` (`idcompra`, `cofecha`, `idusuario`) VALUES
-(17, '2025-11-22 20:30:09', 4);
+(46, '2025-11-23 07:27:15', 21);
 
 -- --------------------------------------------------------
 
@@ -63,7 +59,8 @@ CREATE TABLE `compraestado` (
 --
 
 INSERT INTO `compraestado` (`idcompraestado`, `idcompra`, `idcompraestadotipo`, `cefechaini`, `cefechafin`) VALUES
-(17, 17, 1, '2025-11-22 20:30:09', NULL);
+(24, 46, 1, '2025-11-23 07:27:15', '2025-11-23 07:32:18'),
+(25, 46, 4, '2025-11-23 07:32:18', NULL);
 
 -- --------------------------------------------------------
 
@@ -85,7 +82,8 @@ INSERT INTO `compraestadotipo` (`idcompraestadotipo`, `cetdescripcion`, `cetdeta
 (1, 'iniciada', 'cuando el usuario : cliente inicia la compra de uno o mas productos del carrito'),
 (2, 'aceptada', 'cuando el usuario administrador da ingreso a uno de las compras en estado = 1 '),
 (3, 'enviada', 'cuando el usuario administrador envia a uno de las compras en estado =2 '),
-(4, 'cancelada', 'un usuario administrador podra cancelar una compra en cualquier estado y un usuario cliente solo en estado=1 ');
+(4, 'cancelada', 'un usuario administrador podra cancelar una compra en cualquier estado y un usuario cliente solo en estado=1 '),
+(5, 'finalizada', 'cuando la compra ha sido recibida por el cliente y finaliza el proceso de envío');
 
 -- --------------------------------------------------------
 
@@ -99,13 +97,6 @@ CREATE TABLE `compraitem` (
   `idcompra` bigint(20) NOT NULL,
   `cicantidad` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Volcado de datos para la tabla `compraitem`
---
-
-INSERT INTO `compraitem` (`idcompraitem`, `idproducto`, `idcompra`, `cicantidad`) VALUES
-(17, 55, 17, 2);
 
 -- --------------------------------------------------------
 
@@ -128,9 +119,7 @@ CREATE TABLE `menu` (
 
 INSERT INTO `menu` (`idmenu`, `menombre`, `melink`, `medescripcion`, `idpadre`, `medeshabilitado`) VALUES
 (179, 'celulares', 'celulares.php', 'celulares.php', NULL, NULL),
-(183, 'Apple', 'celulares/apple.php', 'celulares/apple.php', 179, NULL),
-(185, 'Accesorios', 'celulares/apple/accesorios.php', 'celulares/apple/accesorios.php', 183, NULL),
-(186, 'Samsungs', 'celulares/samsungs.php', 'celulares/samsungs.php', 179, NULL);
+(188, 'Samsung', 'celulares/samsung.php', 'celulares/samsung.php', 179, NULL);
 
 -- --------------------------------------------------------
 
@@ -168,7 +157,8 @@ CREATE TABLE `producto` (
 
 INSERT INTO `producto` (`idproducto`, `pronombre`, `prodetalle`, `proprecio`, `prooferta`, `profinoffer`, `proimagen`, `procantstock`, `idusuario`, `prodeshabilitado`) VALUES
 (53, 'celulares_motorola_Moto Edge 50 Pro', 'El Motorola Edge 50 Pro combina diseño y tecnología de punta para ofrecer una experiencia móvil superior.', 779990.00, 5, '2025-11-04 18:04:24', 'Moto_Edge_50_Pro_1763822539.png', 5, 4, NULL),
-(55, 'celulares_apple_ipad air', 'Apple iPad Air 11, chip M3, Wi-Fi, 128 GB, gris espacial - Distribuidor Autorizado', 1556999.00, 0, NULL, 'ipad_air_1763827015.png', 3, 4, NULL);
+(55, 'celulares_apple_ipad air', 'Apple iPad Air 11, chip M3, Wi-Fi, 128 GB, gris espacial - Distribuidor Autorizado', 1556999.00, 0, NULL, 'ipad_air_1763827015.png', 2, 4, NULL),
+(56, 'celulares_samsung_Samsung Galaxy A55', 'alto samsung', 654645.00, 0, NULL, 'Samsung_Galaxy_A55_1763859572.webp', 2, 4, NULL);
 
 -- --------------------------------------------------------
 
@@ -210,11 +200,7 @@ CREATE TABLE `usuario` (
 
 INSERT INTO `usuario` (`idusuario`, `usnombre`, `uspass`, `usmail`, `usdeshabilitado`) VALUES
 (4, 'ale.c', '$2y$10$ASSBVgrb9t7YGQifGPpuM.dCo/DchUPveYjg/DocsNg7/rv0rVXDm', 'alejandro.claure@est.fi.uncoma.edu.ar', NULL),
-(15, 'cliente', '$2y$10$VE.EpLJ4rM/bmwynZS3gbeZjNKjU33Vm9btfDyJUc2bkF92441Xl.', 'cliente@gmail.com', NULL),
-(16, 'personal', '$2y$10$bEJg9l4BtxA4YtdiYhWvnuNtzPJzcnstjzphefcJaAU3iBolJV9xK', 'alejoclaure@gmail.com', NULL),
-(17, 'ale', '$2y$10$TIz833lAPxvks3dDpmQ3..u4q5H8udldSi9WPoivl/xhYlnv12sr2', 'alejoclaure@hotmail.com', NULL),
-(18, 'clientes', '$2y$10$e/K17PFlQdBRWqy.0wTcX.y4fPo.4Wj6UcQ5lAaRQLh0waeUKHUIG', 'c@gmail.com', NULL),
-(20, 'clientess', '$2y$10$9ZHy4Tq3XHOmM6Zj.CCPFe20SHCtzwRr0YWdaBzCeCH/fTUdWqUPe', 'alejoclaure@gmail', NULL);
+(21, 'cliente', '$2y$10$FZP0Q4SOyfwQ3P8obrgWp.4JIt7kDNl5plDMArYZUHdT4DyJzB9Ki', 'cliente@gmail.com', NULL);
 
 -- --------------------------------------------------------
 
@@ -234,12 +220,7 @@ CREATE TABLE `usuariorol` (
 INSERT INTO `usuariorol` (`idusuario`, `idrol`) VALUES
 (4, 1),
 (4, 2),
-(15, 2),
-(16, 2),
-(17, 2),
-(18, 2),
-(18, 4),
-(20, 2);
+(21, 2);
 
 --
 -- Índices para tablas volcadas
@@ -325,31 +306,31 @@ ALTER TABLE `usuariorol`
 -- AUTO_INCREMENT de la tabla `compra`
 --
 ALTER TABLE `compra`
-  MODIFY `idcompra` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `idcompra` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT de la tabla `compraestado`
 --
 ALTER TABLE `compraestado`
-  MODIFY `idcompraestado` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `idcompraestado` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT de la tabla `compraitem`
 --
 ALTER TABLE `compraitem`
-  MODIFY `idcompraitem` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `idcompraitem` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT de la tabla `menu`
 --
 ALTER TABLE `menu`
-  MODIFY `idmenu` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=187;
+  MODIFY `idmenu` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=189;
 
 --
 -- AUTO_INCREMENT de la tabla `producto`
 --
 ALTER TABLE `producto`
-  MODIFY `idproducto` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `idproducto` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT de la tabla `rol`
@@ -361,7 +342,7 @@ ALTER TABLE `rol`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `idusuario` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `idusuario` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- Restricciones para tablas volcadas
