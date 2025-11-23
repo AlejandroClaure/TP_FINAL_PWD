@@ -11,7 +11,7 @@ if (!$id || !$precio) {
     exit;
 }
 
-$exito = $abmProducto->modificacion([
+$exito = $abmProducto->modificar([
     "idproducto" => $id,
     "proprecio"  => $precio
 ]);
