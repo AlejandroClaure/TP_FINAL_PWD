@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 
 require_once '../../configuracion.php';
 require_once '../../Modelo/Venta.php';
-require_once __DIR__ . '/../../vendor/autoload.php'; // DOMPDF + PHPMailer
+require_once '../../vendor/autoload.php'; // DOMPDF + PHPMailer
 
 use Dompdf\Dompdf;
 use PHPMailer\PHPMailer\PHPMailer;
