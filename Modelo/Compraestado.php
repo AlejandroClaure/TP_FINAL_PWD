@@ -1,7 +1,6 @@
 <?php
 class CompraEstado extends BaseDatos
 {
-
     private $idCompraEstado;
     private $objCompra;
     private $objCompraEstadoTipo;
@@ -57,7 +56,6 @@ class CompraEstado extends BaseDatos
         $this->objCompraEstadoTipo = $v;
     }
 
-    // Getter directo del tipo para ABM/acciones
     public function getIdCompraEstadoTipo()
     {
         return $this->objCompraEstadoTipo->getIdCompraEstadoTipo();
@@ -90,7 +88,22 @@ class CompraEstado extends BaseDatos
         $this->mensajeOperacion = $v;
     }
 
-    // Cargar por id
+    // Métodos adicionales
+    public function getEstadoDescripcion()
+    {
+        return $this->getObjCompraEstadoTipo()->getCetDescripcion();
+    }
+
+    public function getFechaInicio()
+    {
+        return $this->getCeFechaIni();
+    }
+    public function getFechaFin()
+    {
+        return $this->getCeFechaFin();
+    }
+
+    // Cargar por ID
     public function cargar()
     {
         $resp = false;
@@ -118,11 +131,11 @@ class CompraEstado extends BaseDatos
         $resp = false;
         $fechafin = $this->getCeFechaFin() ? "'" . $this->getCeFechaFin() . "'" : "NULL";
         $sql = "INSERT INTO compraestado (idcompra, idcompraestadotipo, cefechaini, cefechafin) VALUES (
-            " . $this->getObjCompra()->getIdCompra() . ",
-            " . $this->getObjCompraEstadoTipo()->getIdCompraEstadoTipo() . ",
-            '" . $this->getCeFechaIni() . "',
-            $fechafin
-        )";
+        " . $this->getObjCompra()->getIdCompra() . ",
+        " . $this->getObjCompraEstadoTipo()->getIdCompraEstadoTipo() . ",
+        '" . $this->getCeFechaIni() . "',
+        $fechafin
+    )";
         $id = $this->Ejecutar($sql);
         if ($id > 0) {
             $this->setIdCompraEstado($id);
@@ -133,14 +146,13 @@ class CompraEstado extends BaseDatos
         return $resp;
     }
 
+
     // Modificar
     public function modificar()
     {
         $resp = false;
         $fechafin = $this->getCeFechaFin() ? "'" . $this->getCeFechaFin() . "'" : "NULL";
-        $sql = "UPDATE compraestado SET 
-                cefechafin = $fechafin
-                WHERE idcompraestado = " . $this->getIdCompraEstado();
+        $sql = "UPDATE compraestado SET cefechafin = $fechafin WHERE idcompraestado = " . $this->getIdCompraEstado();
         if ($this->Ejecutar($sql) >= 0) {
             $resp = true;
         }
@@ -159,11 +171,12 @@ class CompraEstado extends BaseDatos
     // Listar
     public function listar($parametro = "")
     {
-        $arreglo = array();
+        $arreglo = [];
         $sql = "SELECT ce.*, cet.cetdescripcion FROM compraestado ce 
                 JOIN compraestadotipo cet ON ce.idcompraestadotipo = cet.idcompraestadotipo";
         if ($parametro != "") $sql .= " WHERE " . $parametro;
         $sql .= " ORDER BY cefechaini DESC";
+
         $res = $this->Ejecutar($sql);
         if ($res > 0) {
             while ($row = $this->Registro()) {

@@ -53,4 +53,5 @@ class AbmCompra
         $obj = new Compra();
         return $obj->listar($where);
     }
+    
 }

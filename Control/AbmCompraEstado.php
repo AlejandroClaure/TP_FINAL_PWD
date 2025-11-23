@@ -79,9 +79,9 @@ class AbmCompraEstado {
 public function cambiarEstadoCompra($idCompra, $nuevoEstadoTipo)
 {
     $nuevoEstadoTipo = (int)$nuevoEstadoTipo;
-    if (!in_array($nuevoEstadoTipo, [2, 3, 4])) return false; // solo aceptada, enviada, cancelada
+    if (!in_array($nuevoEstadoTipo, [2, 3, 4, 5])) return false; // agregamos 5 = finalizada
 
-    // 1. Cerrar estado actual (si existe y no está cerrado)
+    // Cerrar estado actual
     $estadoActual = $this->buscar([
         'idcompra' => $idCompra,
         'cefechafin' => null
@@ -93,7 +93,7 @@ public function cambiarEstadoCompra($idCompra, $nuevoEstadoTipo)
         $estado->modificar();
     }
 
-    // 2. Crear nuevo estado
+    // Crear nuevo estado
     $datos = [
         'idcompra' => $idCompra,
         'idcompraestadotipo' => $nuevoEstadoTipo,
@@ -103,6 +103,8 @@ public function cambiarEstadoCompra($idCompra, $nuevoEstadoTipo)
 
     return $this->alta($datos);
 }
+
+
 
 public function obtenerEstadoActual($idCompra)
 {

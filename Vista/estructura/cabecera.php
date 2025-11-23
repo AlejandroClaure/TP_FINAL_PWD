@@ -105,6 +105,15 @@ foreach ($menus as $m) {
                      </li>
                   <?php endif; ?>
 
+                  <?php if ($usuario && in_array("admin", $rolesUsuario)): ?>
+                     <li class="nav-item">
+                        <a class="nav-link text-warning fw-bold"
+                           href="<?= $GLOBALS['VISTA_URL']; ?>compra/verCompraAdmin.php">
+                           <i class="fa fa-shopping-bag"></i> Compras Admin
+                        </a>
+                     </li>
+                  <?php endif; ?>
+
 
 
                   <!-- ADMIN -->

@@ -7,6 +7,7 @@ class CompraItem
     private $objproducto;
     private $cicantidad;
     private $mensajeoperacion;
+    
 
     public function __construct()
     {
@@ -146,4 +147,10 @@ class CompraItem
         }
         return $arreglo;
     }
+
+     public function getSubtotal()
+{
+    return $this->getCiCantidad() * $this->getObjProducto()->getProprecio();
+}
+
 }

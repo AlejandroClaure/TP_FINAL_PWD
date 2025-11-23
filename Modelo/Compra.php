@@ -164,4 +164,50 @@ class Compra extends BaseDatos
     {
         return $this->listar("idusuario = $idusuario ORDER BY cofecha DESC");
     }
+
+    // Dentro de la clase Compra
+
+    public function getItems()
+    {
+        $abmItem = new AbmCompraItem();
+        return $abmItem->buscar(['idcompra' => $this->getIdcompra()]);
+    }
+
+    public function getHistorialEstados()
+    {
+        $abmCompraEstado = new AbmCompraEstado();
+        return $abmCompraEstado->buscar(['idcompra' => $this->getIdcompra()]);
+    }
+
+    public function getEstadoActual()
+    {
+        $historial = $this->getHistorialEstados();
+
+        foreach ($historial as $est) {
+            if ($est->getCefechafin() == null) {
+                return $est;
+            }
+        }
+        return null;
+    }
+
+    public function getEstadoActualDescripcion()
+    {
+        $estado = $this->getEstadoActual();
+        return $estado
+            ? $estado->getObjCompraEstadoTipo()->getCetdescripcion()
+            : "Sin estado";
+    }
+    public function getTotal()
+    {
+        $abmCompraItem = new AbmCompraItem();
+        $items = $abmCompraItem->buscar(['idcompra' => $this->getIdcompra()]);
+
+        $total = 0;
+        foreach ($items as $item) {
+            $total += $item->getCiCantidad() * $item->getObjProducto()->getProPrecio();
+        }
+
+        return $total;
+    }
 }

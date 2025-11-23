@@ -38,25 +38,33 @@ include_once '../estructura/cabecera.php';
     <h2>Detalle de Compra #<?= $compra->getIdCompra() ?></h2>
     <p><strong>Cliente:</strong> <?= htmlspecialchars($compra->getObjUsuario()->getUsNombre()) ?></p>
     <p><strong>Fecha:</strong> <?= date('d/m/Y H:i:s', strtotime($compra->getCoFecha())) ?></p>
-    <p><strong>Estado actual:</strong> 
+    <p><strong>Estado actual:</strong>
         <span class="badge bg-primary"><?= ucfirst($estadoDesc) ?></span>
     </p>
 
     <h4 class="mt-4">Productos</h4>
     <table class="table">
-        <thead><tr><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Subtotal</th></tr></thead>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
         <tbody>
-            <?php $total = 0; foreach ($items as $item):
+            <?php $total = 0;
+            foreach ($items as $item):
                 $prod = $item->getObjProducto();
                 $subtotal = $prod->getProPrecio() * $item->getCiCantidad();
                 $total += $subtotal;
             ?>
-            <tr>
-                <td><?= htmlspecialchars($prod->getProNombre()) ?></td>
-                <td><?= $item->getCiCantidad() ?></td>
-                <td>$<?= number_format($prod->getProPrecio(), 0, ',', '.') ?></td>
-                <td>$<?= number_format($subtotal, 0, ',', '.') ?></td>
-            </tr>
+                <tr>
+                    <td><?= htmlspecialchars($prod->getProNombre()) ?></td>
+                    <td><?= $item->getCiCantidad() ?></td>
+                    <td>$<?= number_format($prod->getProPrecio(), 0, ',', '.') ?></td>
+                    <td>$<?= number_format($subtotal, 0, ',', '.') ?></td>
+                </tr>
             <?php endforeach; ?>
             <tr class="table-success">
                 <td colspan="3"><strong>TOTAL</strong></td>
@@ -67,18 +75,25 @@ include_once '../estructura/cabecera.php';
 
     <!-- Cambiar estado -->
     <?php if (!in_array($estadoDesc, ['enviada', 'cancelada'])): ?>
-    <div class="mt-4">
-        <form action="accion/cambiarEstadoCompra.php" method="post" class="d-inline">
-            <input type="hidden" name="idcompra" value="<?= $compra->getIdCompra() ?>">
-            <select name="nuevoestado" class="form-select d-inline w-auto" required>
-                <option value="">Cambiar estado...</option>
-                <option value="2">Aceptada</option>
-                <option value="3">Enviada</option>
-                <option value="4">Cancelar compra</option>
-            </select>
-            <button type="submit" class="btn btn-primary ms-2">Actualizar</button>
-        </form>
-    </div>
+        <div class="mt-4">
+            <form action="accion/cambiarEstadoCompra.php" method="post" class="d-inline">
+                <input type="hidden" name="idcompra" value="<?= $compra->getIdCompra() ?>">
+                <select name="nuevoestado" class="form-select d-inline w-auto" required>
+                    <option value="">Cambiar estado...</option>
+                    <?php if ($estadoDesc === 'iniciada'): ?>
+                        <option value="2">Aceptada</option>
+                        <option value="4">Cancelar compra</option>
+                    <?php elseif ($estadoDesc === 'aceptada'): ?>
+                        <option value="3">Enviada</option>
+                        <option value="4">Cancelar compra</option>
+                    <?php elseif ($estadoDesc === 'enviada'): ?>
+                        <option value="5">Finalizada</option>
+                    <?php endif; ?>
+                </select>
+
+                <button type="submit" class="btn btn-primary ms-2">Actualizar</button>
+            </form>
+        </div>
     <?php endif; ?>
 
     <a href="listarCompras.php" class="btn btn-secondary mt-3">Volver</a>

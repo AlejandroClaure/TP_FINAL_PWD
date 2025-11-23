@@ -20,7 +20,9 @@ class CompraEstadoTipo extends BaseDatos {
         $this->setCetDetalle($detalle);
     }
 
-    
+    // ======================
+    // GETTERS / SETTERS
+    // ======================
     public function getIdCompraEstadoTipo() { return $this->idcompraestadotipo; }
     public function setIdCompraEstadoTipo($valor) { $this->idcompraestadotipo = $valor; }
     public function getCetDescripcion() { return $this->cetdescripcion; }
@@ -30,6 +32,23 @@ class CompraEstadoTipo extends BaseDatos {
     public function getMensajeOperacion() { return $this->mensajeoperacion; }
     public function setMensajeOperacion($valor) { $this->mensajeoperacion = $valor; }
 
+    // ======================
+    // 🔥 MÉTODOS NUEVOS
+    // ======================
+
+    // Devuelve la descripción (para usar en historial, compras, detalles)
+    public function getDescripcion() {
+        return $this->getCetDescripcion();
+    }
+
+    // Devuelve el detalle del estado (opcional)
+    public function getDetalle() {
+        return $this->getCetDetalle();
+    }
+
+    // ======================
+    // BD
+    // ======================
     public function cargar() {
         $resp = false;
         $sql = "SELECT * FROM compraestadotipo WHERE idcompraestadotipo = " . $this->getIdCompraEstadoTipo();
@@ -57,7 +76,7 @@ class CompraEstadoTipo extends BaseDatos {
         return $resp;
     }
 
-    // Normalmente no se modifica ni elimina (son tipos fijos)
+    // No se modifican (estados fijos)
     public function modificar() { return false; }
     public function eliminar() { return false; }
 
