@@ -109,10 +109,9 @@ class CompraItem extends BaseDatos{
         // Si lleva ID Autoincrement, la consulta SQL no lleva dicho ID
         $sql="INSERT INTO compraitem(idproducto, idcompra, cicantidad) 
             VALUES('"
-            .$this->getObjProducto()->getIdProducto()."', '"
-            .$this->getObjCompra()->getIdCompra()."', '"
-            .$this->getCicantidad()."'
-        );";
+            .$this->getObjProducto()->getIdProducto().", "
+            .$this->getObjCompra()->getIdCompra().", "
+            .$this->getCicantidad().");";
         if ($this->Iniciar()) {
             if ($esteid = $this->Ejecutar($sql)) {
                 // Si se usa ID autoincrement, descomentar lo siguiente:
@@ -163,17 +162,18 @@ class CompraItem extends BaseDatos{
         return $resp;
     }
     
-    public function listar($parametro=""){
+    public static function listar($parametro=""){
         $arreglo = array();
-       
+        $base = new BaseDatos();
+
         $sql="SELECT * FROM compraitem ";
         if ($parametro!="") {
             $sql.='WHERE '.$parametro;
         }
-        $res = $this->Ejecutar($sql);
+        $res = $base->Ejecutar($sql);
         if($res>-1){
             if($res>0){
-                while ($row = $this->Registro()){
+                while ($row = $base->Registro()){
                     $obj= new CompraItem();
                     $objCompra = new Compra();
                     $objProducto= new Producto();
@@ -191,7 +191,7 @@ class CompraItem extends BaseDatos{
                 }
             }
         } else {
-            $this->setMensajeOperacion("compraitem->listar: ".$this->getError());
+            error_log("compraitem->listar: " . $base->getError());
         }
     
         return $arreglo;

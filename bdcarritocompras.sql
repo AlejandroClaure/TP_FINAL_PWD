@@ -180,8 +180,8 @@ CREATE TABLE `rol` (
 --
 
 INSERT INTO `rol` (`idrol`, `rodescripcion`) VALUES
-(1, 'admin'),
-(2, 'cliente'),
+(1, 'Admin'),
+(2, 'Cliente'),
 (4, 'Deposito');
 
 -- --------------------------------------------------------
@@ -322,7 +322,8 @@ ALTER TABLE `compraestado`
 -- AUTO_INCREMENT de la tabla `compraitem`
 --
 ALTER TABLE `compraitem`
-  MODIFY `idcompraitem` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `idcompraitem` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  ADD PRIMARY KEY (`idcompraitem`);
 
 --
 -- AUTO_INCREMENT de la tabla `menu`
