@@ -9,158 +9,104 @@ class CompraEstadotipo extends BaseDatos{
     private $cetdetalle;
     private $mensajeoperacion;
 
-    public function __construct(){
+    public function __construct() {
         parent::__construct();
-        $this->idcompraestadotipo="";
-        $this->cetdescripcion="";
-        $this->cetdetalle="";
-        $this->mensajeoperacion="";
+        $this->idcompraestadotipo = 0;
+        $this->cetdescripcion = "";
+        $this->cetdetalle = "";
+        $this->mensajeoperacion = "";
     }
 
-    public function setear($idcompraestadotipo, $cetdescripcion, $cetdetalle){
-        $this->setIdCompraEstadoTipo($idcompraestadotipo);
-        $this->setCetDescripcion($cetdescripcion);
-        $this->setCetDetalle($cetdetalle);
+    public function setear($id, $descripcion, $detalle) {
+        $this->setIdCompraEstadoTipo($id);
+        $this->setCetDescripcion($descripcion);
+        $this->setCetDetalle($detalle);
     }
 
-    public function getMensajeOperacion(){
-        return $this->mensajeoperacion;
+    public function getIdCompraEstadoTipo() { 
+        return $this->idcompraestadotipo; 
+    }
+    public function setIdCompraEstadoTipo($valor) {
+         $this->idcompraestadotipo = $valor; 
+        }
+    public function getCetDescripcion() { 
+        return $this->cetdescripcion; 
+    }
+    public function setCetDescripcion($valor) { 
+        $this->cetdescripcion = $valor; 
+    }
+    public function getCetDetalle() { 
+        return $this->cetdetalle; 
+    }
+    public function setCetDetalle($valor) { 
+        $this->cetdetalle = $valor; 
+    }
+    public function getMensajeOperacion() { 
+        return $this->mensajeoperacion; 
+    }
+    public function setMensajeOperacion($valor) { 
+        $this->mensajeoperacion = $valor; 
     }
 
-    public function setMensajeOperacion($mensajeoperacion){
-        $this->mensajeoperacion = $mensajeoperacion;
-
+    // Devuelve la descripción (para usar en historial, compras, detalles)
+    public function getDescripcion() {
+        return $this->getCetDescripcion();
     }
 
-    public function getCetDetalle(){
-        return $this->cetdetalle;
+    // Devuelve el detalle del estado (opcional)
+    public function getDetalle() {
+        return $this->getCetDetalle();
     }
 
-    public function setCetDetalle($cetdetalle){
-        $this->cetdetalle = $cetdetalle;
-
-    }
-
-    public function getCetDescripcion(){
-        return $this->cetdescripcion;
-    }
-
-    public function setCetDescripcion($cetdescripcion){
-        $this->cetdescripcion = $cetdescripcion;
-
-    }
-
-    public function getIdCompraEstadoTipo(){
-        return $this->idcompraestadotipo;
-    }
-
-    public function setIdCompraEstadoTipo($idcompraestadotipo){
-        $this->idcompraestadotipo = $idcompraestadotipo;
-
-    }
     
-    public function cargar(){
+    public function cargar() {
         $resp = false;
-        
-        $sql="SELECT * FROM compraestadotipo WHERE idcompraestadotipo = ".$this->getIdCompraEstadoTipo();
-        if ($this->Iniciar()) {
-            $res = $this->Ejecutar($sql);
-            if ($res>-1) {
-                if ($res>0) {
-                    $row = $this->Registro();
-                    
-                    $this->setear($row['idcompraestadotipo'], $row['cetdescripcion'], $row['cetdetalle']);
-                }
-            }
-        } else {
-            $this->setMensajeOperacion("compraestadotipo->listar: ".$this->getError());
-        }
-        return $resp;
-    }
-
-    public function insertar(){
-        //Fecha ini poner fecha actual
-        //Setear fecha fin cuando el admin apruebe la compra (fecha)
-        $resp = false;
-        
-        // Si lleva ID Autoincrement, la consulta SQL no lleva dicho ID
-        $sql="INSERT INTO compraestadotipo(idcompraestadotipo, cetdescripcion, cetdetalle) 
-            VALUES('"
-            .$this->getIdCompraEstadoTipo()."', '"
-            .$this->getCetdescripcion()."', '"
-            .$this->getCetdetalle()."'
-        );";
-        if ($this->Iniciar()) {
-            if ($esteid = $this->Ejecutar($sql)) {
-                // Si se usa ID autoincrement, descomentar lo siguiente:
-                //$this->setID($esteid);
+        $sql = "SELECT * FROM compraestadotipo WHERE idcompraestadotipo = " . $this->getIdCompraEstadoTipo();
+        if ($this->Ejecutar($sql) > 0) {
+            if ($row = $this->Registro()) {
+                $this->setear($row['idcompraestadotipo'], $row['cetdescripcion'], $row['cetdetalle']);
                 $resp = true;
-            } else {
-                $this->setMensajeOperacion("compraestadotipo->insertar: ".$this->getError());
             }
-        } else {
-            $this->setMensajeOperacion("compraestadotipo->insertar: ".$this->getError());
         }
         return $resp;
     }
 
-    public function modificar(){
+    public function insertar() {
         $resp = false;
-        
-        $sql="UPDATE compraestadotipo 
-        SET cetdescripcion='".$this->getCetDescripcion()
-        ."', cetdetalle='".$this->getCetDetalle()
-        ."' WHERE idcompraestadotipo='".$this->getIdCompraEstadoTipo()."'";
-        if ($this->Iniciar()) {
-            if ($this->Ejecutar($sql)) {
-                $resp = true;
-            } else {
-                $this->setMensajeOperacion("compraestadotipo->modificar: ".$this->getError());
-            }
+        $sql = "INSERT INTO compraestadotipo (idcompraestadotipo, cetdescripcion, cetdetalle) VALUES (
+            " . $this->getIdCompraEstadoTipo() . ",
+            '" . $this->getCetDescripcion() . "',
+            '" . $this->getCetDetalle() . "'
+        )";
+        if ($this->Ejecutar($sql) >= 0) {
+            $resp = true;
         } else {
-            $this->setMensajeOperacion("compraestadotipo->modificar: ".$this->getError());
+            $this->setMensajeOperacion("CompraEstadoTipo->insertar: " . $this->getError());
         }
         return $resp;
     }
 
-    public function eliminar(){
-        $resp = false;
-        
-        $sql="DELETE FROM compraestadotipo WHERE idcompraestadotipo=".$this->getIdCompraEstadoTipo();
-        if ($this->Iniciar()) {
-            if ($this->Ejecutar($sql)) {
-                return true;
-            } else {
-                $this->setMensajeOperacion("compraestadotipo->eliminar: ".$this->getError());
-            }
-        } else {
-            $this->setMensajeOperacion("compraestadotipo->eliminar: ".$this->getError());
-        }
-        return $resp;
+    // No se modifican (estados fijos)
+    public function modificar() { 
+        return false; 
+    }
+    public function eliminar() {
+         return false; 
     }
 
-    public function listar($parametro=""){
+    public function listar($parametro = "") {
         $arreglo = array();
-        
-        $sql="SELECT * FROM compraestadotipo ";
-        if ($parametro!="") {
-            $sql.='WHERE '.$parametro;
-        }
+        $sql = "SELECT * FROM compraestadotipo";
+        if ($parametro != "") $sql .= " WHERE " . $parametro;
         $res = $this->Ejecutar($sql);
-        if ($res>-1) {
-            if ($res>0) {
-                while ($row = $this->Registro()) {
-                    $obj= new CompraEstadoTipo();
-                    
-                    $obj->setear($row['idcompraestadotipo'], $row['cetdescripcion'], $row['cetdetalle']);
-                    array_push($arreglo, $obj);
-                }
+        if ($res > 0) {
+            while ($row = $this->Registro()) {
+                $obj = new CompraEstadoTipo();
+                $obj->setear($row['idcompraestadotipo'], $row['cetdescripcion'], $row['cetdetalle']);
+                array_push($arreglo, $obj);
             }
-        } else {
-            $this->setMensajeOperacion("compraestadotipo->listar: ".$this->getError());
         }
-
         return $arreglo;
-    }    
+    }
 }
 ?>

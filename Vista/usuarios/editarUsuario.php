@@ -78,7 +78,7 @@ if (file_exists($cabeceraPath)) {
 
                 <div class="col-12 mt-3">
                     <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                    <a href="../../Vista/inicio.php" class="btn btn-secondary">Cancelar</a>
+                    <a href="../login/paginaSegura.php" class="btn btn-secondary">Cancelar</a>
                 </div>
             </form>
         </div>

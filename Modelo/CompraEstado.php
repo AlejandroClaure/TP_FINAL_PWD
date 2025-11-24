@@ -7,7 +7,7 @@ class CompraEstado extends BaseDatos{
     private $ceFechaFin;
     private $mensajeOperacion;
 
-    public function __construct(){
+     public function __construct(){
         parent::__construct();
         $this->idCompraEstado = 0;
         $this->objCompra = new Compra();
@@ -84,8 +84,9 @@ class CompraEstado extends BaseDatos{
         return $this->getCeFechaFin();
     }
 
-    // Cargar por ID
-    public function cargar(){
+     // Cargar por ID
+    public function cargar()
+    {
         $resp = false;
         $sql = "SELECT * FROM compraestado WHERE idcompraestado = " . $this->getIdCompraEstado();
         if ($this->Ejecutar($sql) > 0) {
@@ -106,7 +107,8 @@ class CompraEstado extends BaseDatos{
     }
 
     // Insertar
-    public function insertar(){
+    public function insertar()
+    {
         $resp = false;
         $fechafin = $this->getCeFechaFin() ? "'" . $this->getCeFechaFin() . "'" : "NULL";
         $sql = "INSERT INTO compraestado (idcompra, idcompraestadotipo, cefechaini, cefechafin) VALUES (
@@ -127,7 +129,8 @@ class CompraEstado extends BaseDatos{
 
 
     // Modificar
-    public function modificar(){
+    public function modificar()
+    {
         $resp = false;
         $fechafin = $this->getCeFechaFin() ? "'" . $this->getCeFechaFin() . "'" : "NULL";
         $sql = "UPDATE compraestado SET cefechafin = $fechafin WHERE idcompraestado = " . $this->getIdCompraEstado();
@@ -138,7 +141,8 @@ class CompraEstado extends BaseDatos{
     }
 
     // Eliminar
-    public function eliminar(){
+    public function eliminar()
+    {
         $resp = false;
         $sql = "DELETE FROM compraestado WHERE idcompraestado = " . $this->getIdCompraEstado();
         if ($this->Ejecutar($sql) >= 0) $resp = true;
@@ -146,7 +150,8 @@ class CompraEstado extends BaseDatos{
     }
 
     // Listar
-    public function listar($parametro = ""){
+    public function listar($parametro = "")
+    {
         $arreglo = [];
         $sql = "SELECT ce.*, cet.cetdescripcion FROM compraestado ce 
                 JOIN compraestadotipo cet ON ce.idcompraestadotipo = cet.idcompraestadotipo";
@@ -173,7 +178,8 @@ class CompraEstado extends BaseDatos{
     }
 
     // Cerrar estado actual
-    public function cerrarEstadoActual($idcompra){
+    public function cerrarEstadoActual($idcompra)
+    {
         $sql = "UPDATE compraestado SET cefechafin = NOW() 
                 WHERE idcompra = $idcompra AND cefechafin IS NULL";
         return $this->Ejecutar($sql) >= 0;

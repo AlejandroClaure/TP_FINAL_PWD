@@ -7,21 +7,18 @@ class UsuarioRol extends BaseDatos
     private $objrol;
     private $mensajeoperacion;
 
-    public function __construct()
-    {
+    public function __construct(){
         parent::__construct();
         $this->objusuario = new Usuario();
         $this->objrol = new Rol();
     }
 
-    public function setear($objusuario, $objrol)
-    {
+    public function setear($objusuario, $objrol){
         $this->setObjUsuario($objusuario);
         $this->setObjRol($objrol);
     }
 
-    public function setearConClave($idusuario, $idjrol)
-    {
+    public function setearConClave($idusuario, $idjrol){
         $this->getObjRol()->setIdRol($idjrol);
         $this->getObjUsuario()->setIdUsuario($idusuario);
     }
@@ -70,11 +67,10 @@ class UsuarioRol extends BaseDatos
             $this->setMensajeOperacion("UsuarioRol->cargar: " . $this->getError());
         }
     }
-    return $resp;  
-}
+        return $resp;  
+    }
 
-    public function insertar()
-    {
+    public function insertar(){
         $resp = false;
         $sql = "INSERT INTO usuariorol(idrol,idusuario)  VALUES(" . $this->getObjRol()->getIdRol() . "," . $this->getObjUsuario()->getIdUsuario() . ");";
         if ($this->Iniciar()) {
@@ -90,8 +86,7 @@ class UsuarioRol extends BaseDatos
         return $resp;
     }
 
-    public function modificar()
-    {
+    public function modificar(){
         $resp = false;
         return $resp;
     }
@@ -109,7 +104,7 @@ class UsuarioRol extends BaseDatos
             $this->setMensajeOperacion("UsuarioRol->eliminar: " . $this->getError());
         }
     }
-        return $resp;
+    return $resp;
     }
 
     public function listar($parametro = ""){
@@ -182,48 +177,48 @@ class UsuarioRol extends BaseDatos
         return $roles;
     }
 
-    /**
- * Busca registros en la tabla usuariorol según los parámetros dados
- * Ejemplos de uso:
- *   buscar(['idusuario' => 5])
- *   buscar(['idrol' => 1])
- *   buscar(['idusuario' => 5, 'idrol' => 1])
- *   buscar() → devuelve todos
- */
-public function buscar($param = []){
-    $where = " true ";
-    if ($param != null) {
-        if (isset($param['idusuario'])) $where .= " AND idusuario = " . intval($param['idusuario']);
-        if (isset($param['idrol']))     $where .= " AND idrol = " . intval($param['idrol']);
-    }
-
-    $arreglo = array();
-    $sql = "SELECT * FROM usuariorol WHERE " . $where;
-
-    if ($this->Iniciar()) {
-        $res = $this->Ejecutar($sql);
-        if ($res > -1) {
-            if ($res > 0) {
-                while ($row = $this->Registro()) {
-                    $obj = new UsuarioRol();
-
-                    $objUsuario = new Usuario();
-                    $objUsuario->setIdUsuario($row['idusuario']);
-                    $objUsuario->cargar();
-
-                    $objRol = new Rol();
-                    $objRol->setIdRol($row['idrol']);
-                    $objRol->cargar();
-
-                    $obj->setear($objUsuario, $objRol);
-                    $arreglo[] = $obj;
-                }
-            }
-        } else {
-            $this->setMensajeOperacion("UsuarioRol->buscar: " . $this->getError());
+        /**
+     * Busca registros en la tabla usuariorol según los parámetros dados
+     * Ejemplos de uso:
+     *   buscar(['idusuario' => 5])
+     *   buscar(['idrol' => 1])
+     *   buscar(['idusuario' => 5, 'idrol' => 1])
+     *   buscar() → devuelve todos
+     */
+    public function buscar($param = []){
+        $where = " true ";
+        if ($param != null) {
+            if (isset($param['idusuario'])) $where .= " AND idusuario = " . intval($param['idusuario']);
+            if (isset($param['idrol']))     $where .= " AND idrol = " . intval($param['idrol']);
         }
+
+        $arreglo = array();
+        $sql = "SELECT * FROM usuariorol WHERE " . $where;
+
+        if ($this->Iniciar()) {
+            $res = $this->Ejecutar($sql);
+            if ($res > -1) {
+                if ($res > 0) {
+                    while ($row = $this->Registro()) {
+                        $obj = new UsuarioRol();
+
+                        $objUsuario = new Usuario();
+                        $objUsuario->setIdUsuario($row['idusuario']);
+                        $objUsuario->cargar();
+
+                        $objRol = new Rol();
+                        $objRol->setIdRol($row['idrol']);
+                        $objRol->cargar();
+
+                        $obj->setear($objUsuario, $objRol);
+                        $arreglo[] = $obj;
+                    }
+                }
+            } else {
+                $this->setMensajeOperacion("UsuarioRol->buscar: " . $this->getError());
+            }
+        }
+        return $arreglo;
     }
-    return $arreglo;
-}
 }
 ?>

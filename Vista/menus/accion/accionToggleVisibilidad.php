@@ -22,7 +22,7 @@ $datos = [
     "medeshabilitado" => $nuevoEstado
 ];
 
-$abm->modificacion($datos);
+$abm->modificar($datos);
 
 header("Location: ../gestionMenus.php?toggle=1");
 exit;

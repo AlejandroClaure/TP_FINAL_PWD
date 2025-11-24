@@ -37,6 +37,8 @@ class Session
     public function iniciar($nombreUsuario, $psw)
     {
         $abmUsuario = new AbmUsuario();
+
+        // Busco el usuario por nombre
         $usuarios = $abmUsuario->buscar(['usnombre' => $nombreUsuario]);
 
         if (count($usuarios) !== 1) {
@@ -45,12 +47,16 @@ class Session
 
         $usuario = $usuarios[0];
 
+        // Verifico la contraseña hasheada
         if (!password_verify($psw, $usuario->getUsPass())) {
             return false;
         }
 
+        // Login correcto → guardo datos en session
         $_SESSION['idusuario'] = $usuario->getIdUsuario();
         $this->usuario = $usuario;
+
+        $_SESSION['usnombre']  = $usuario->getUsNombre();
 
         $usuario->cargarRoles();
         $_SESSION['roles'] = array_map(fn($rol) => $rol->getRoDescripcion(), $usuario->getRoles());
@@ -75,12 +81,19 @@ class Session
         return $this->validar();
     }
 
-    /**
-     * Devuelve el usuario logueado
+   /**
+     * Devuelve el objeto usuario actualmente logueado
      */
     public function getUsuario()
     {
-        return $this->usuario;
+        if (!$this->activa()) {
+            return null;
+        }
+
+        $abmUsuario = new AbmUsuario();
+        $usuarios = $abmUsuario->buscar(['idusuario' => $_SESSION['idusuario']]);
+
+        return $usuarios[0] ?? null;
     }
 
     /**
