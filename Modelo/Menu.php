@@ -1,7 +1,6 @@
 <?php
 
-class Menu extends BaseDatos
-{
+class Menu extends BaseDatos{
 
     private $idmenu;
     private $menombre;
@@ -11,8 +10,7 @@ class Menu extends BaseDatos
     private $medeshabilitado;
     private $mensajeoperacion;
 
-    public function __construct()
-    {
+    public function __construct(){
         parent::__construct();
         $this->idmenu = null;
         $this->menombre = "";
@@ -23,8 +21,7 @@ class Menu extends BaseDatos
         $this->mensajeoperacion = "";
     }
 
-    public function setear($idmenu, $menombre, $melink, $objpadre, $medescripcion, $medeshabilitado)
-    {
+    public function setear($idmenu, $menombre, $melink, $objpadre, $medescripcion, $medeshabilitado){
         $this->idmenu = $idmenu;
         $this->menombre = $menombre;
         $this->melink = $melink;
@@ -35,74 +32,57 @@ class Menu extends BaseDatos
 
     // ======== GETTERS & SETTERS ========
 
-    public function getIdMenu()
-    {
+    public function getIdMenu(){
         return $this->idmenu;
     }
-    public function setIdMenu($id)
-    {
+    public function setIdMenu($id){
         $this->idmenu = $id;
     }
 
-    public function getMeNombre()
-    {
+    public function getMeNombre(){
         return $this->menombre;
     }
-    public function setMeNombre($n)
-    {
+    public function setMeNombre($n){
         $this->menombre = $n;
     }
 
-    public function getMeLink()
-    {
+    public function getMeLink(){
         return $this->melink;
     }
-    public function setMeLink($l)
-    {
+    public function setMeLink($l){
         $this->melink = $l;
     }
 
-    public function getObjMenuPadre()
-    {
+    public function getObjMenuPadre(){
         return $this->objmenupadre;
     }
-    public function setObjMenuPadre($o)
-    {
+    public function setObjMenuPadre($o){
         $this->objmenupadre = $o;
     }
 
-    public function getMeDescripcion()
-    {
+    public function getMeDescripcion(){
         return $this->medescripcion;
     }
-    public function setMeDescripcion($d)
-    {
+    public function setMeDescripcion($d){
         $this->medescripcion = $d;
     }
 
-    public function getMeDeshabilitado()
-    {
+    public function getMeDeshabilitado(){
         return $this->medeshabilitado;
     }
-    public function setMeDeshabilitado($d)
-    {
+    public function setMeDeshabilitado($d){
         $this->medeshabilitado = $d;
     }
 
-    public function getMensajeOperacion()
-    {
+    public function getMensajeOperacion(){
         return $this->mensajeoperacion;
     }
-    public function setMensajeOperacion($m)
-    {
+    public function setMensajeOperacion($m){
         $this->mensajeoperacion = $m;
     }
 
 
-    // ======== CARGAR ========
-
-    public function cargar()
-    {
+    public function cargar(){
 
         $resp = false;
         $sql = "SELECT * FROM menu WHERE idmenu = " . $this->idmenu;
@@ -140,10 +120,7 @@ class Menu extends BaseDatos
     }
 
 
-    // ======== INSERTAR ========
-
-    public function insertar()
-    {
+    public function insertar(){
         $idpadre = (!empty($this->objmenupadre))
             ? (is_object($this->objmenupadre) ? $this->objmenupadre->getIdMenu() : intval($this->objmenupadre))
             : "NULL";
@@ -173,14 +150,7 @@ class Menu extends BaseDatos
     }
 
 
-
-
-
-
-    //======== MODIFICAR ========
-
-    public function modificar()
-    {
+    public function modificar(){
         $idpadre = "NULL";
         if ($this->objmenupadre !== null && $this->objmenupadre instanceof Menu) {
             $idpadre = $this->objmenupadre->getIdMenu();
@@ -215,13 +185,7 @@ class Menu extends BaseDatos
     }
 
 
-
-
-
-    // ======== ELIMINAR ========
-
-    public function eliminar()
-    {
+    public function eliminar(){
         $sql = "DELETE FROM menu WHERE idmenu = {$this->idmenu}";
 
         if ($this->Iniciar()) {
@@ -231,11 +195,7 @@ class Menu extends BaseDatos
         return false;
     }
 
-
-    // ======== LISTAR ========
-
-    public static function listar($param = "")
-    {
+    public static function listar($param = ""){
 
         $arreglo = [];
         $base = new BaseDatos();
@@ -274,3 +234,4 @@ class Menu extends BaseDatos
         return $arreglo;
     }
 }
+?>

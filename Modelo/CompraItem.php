@@ -1,5 +1,5 @@
 <?php
-class Compraitem extends BaseDatos{
+class CompraItem extends BaseDatos{
 
     //ver los diferentes estados de la compra y sus posibles contextos de cambio 
     //hacer la extensión con la BD
@@ -20,7 +20,7 @@ class Compraitem extends BaseDatos{
     }
 
     public function setear($idcompraitem,$newObjProducto,$newObjCompra,$cicantidad){
-        $this->setID($idcompraitem);
+        $this->setIdCompraItem($idcompraitem);
         $this->setObjproducto($newObjProducto);
         $this->setObjcompra($newObjCompra);
         $this->setCicantidad($cicantidad);
@@ -33,11 +33,11 @@ class Compraitem extends BaseDatos{
     }
 
     
-    public function getID(){
+    public function getIdCompraItem(){
         return $this->idcompraitem;
     }
 
-    public function setID($idcompraitem){
+    public function setIdCompraItem($idcompraitem){
         $this->idcompraitem = $idcompraitem;
     }
  
@@ -77,17 +77,17 @@ class Compraitem extends BaseDatos{
     public function cargar(){
         $resp = false;
        
-        $sql="SELECT * FROM compraitem WHERE idcompraitem = ".$this->getID();
+        $sql="SELECT * FROM compraitem WHERE idcompraitem = ".$this->getIdCompraItem();
         if ($this->Iniciar()) {
             $res = $this->Ejecutar($sql);
             if($res>-1){
                 if($res>0){
                     $row = $this->Registro();
-                    $objproducto= new producto();
-                    $objcompra= new compra();
+                    $objproducto= new Producto();
+                    $objcompra= new Compra();
 
-                    $objproducto->setID($row['idproducto']);
-                    $objcompra->setID($row['idcompra']);
+                    $objproducto->setIdProducto($row['idproducto']);
+                    $objcompra->setIdCompra($row['idcompra']);
 
                     $objproducto->cargar();
                     $objcompra->cargar();
@@ -109,14 +109,14 @@ class Compraitem extends BaseDatos{
         // Si lleva ID Autoincrement, la consulta SQL no lleva dicho ID
         $sql="INSERT INTO compraitem(idproducto, idcompra, cicantidad) 
             VALUES('"
-            .$this->getObjProducto()->getID()."', '"
-            .$this->getObjCompra()->getID()."', '"
+            .$this->getObjProducto()->getIdProducto()."', '"
+            .$this->getObjCompra()->getIdCompra()."', '"
             .$this->getCicantidad()."'
         );";
         if ($this->Iniciar()) {
             if ($esteid = $this->Ejecutar($sql)) {
                 // Si se usa ID autoincrement, descomentar lo siguiente:
-                $this->setId($esteid);
+                $this->setIdCompraItem($esteid);
                 $resp = true;
             } else {
                 $this->setMensajeOperacion("compraitem->insertar: ".$this->getError());
@@ -131,10 +131,10 @@ class Compraitem extends BaseDatos{
         $resp = false;
     
         $sql="UPDATE compraitem 
-        SET idproducto='".$this->getObjProducto()->getID()
-        ."', idcompra='".$this->getObjCompra()->getID()
+        SET idproducto='".$this->getObjProducto()->getIdProducto()
+        ."', idcompra='".$this->getObjCompra()->getIdCompra()
         ."', cicantidad='".$this->getCiCantidad()
-        ."' WHERE idcompraitem='".$this->getID()."'";
+        ."' WHERE idcompraitem='".$this->getIdCompraItem()."'";
         if ($this->Iniciar()) {
             if ($this->Ejecutar($sql)) {
                 $resp = true;
@@ -150,7 +150,7 @@ class Compraitem extends BaseDatos{
     public function eliminar(){
         $resp = false;
        
-        $sql="DELETE FROM compraitem WHERE idcompraitem=".$this->getID();
+        $sql="DELETE FROM compraitem WHERE idcompraitem=".$this->getIdCompraItem();
         if ($this->Iniciar()) {
             if ($this->Ejecutar($sql)) {
                 return true;
@@ -174,12 +174,12 @@ class Compraitem extends BaseDatos{
         if($res>-1){
             if($res>0){
                 while ($row = $this->Registro()){
-                    $obj= new compraItem();
-                    $objCompra = new compra();
-                    $objProducto= new producto();
+                    $obj= new CompraItem();
+                    $objCompra = new Compra();
+                    $objProducto= new Producto();
 
-                    $objCompra->setID($row['idcompra']);
-                    $objProducto->setID($row['idproducto']);
+                    $objCompra->setIdCompra($row['idcompra']);
+                    $objProducto->setIdProducto($row['idproducto']);
 
                     $objCompra->cargar();
                     $objProducto->cargar();
@@ -198,6 +198,4 @@ class Compraitem extends BaseDatos{
     }
 
 }
-
-
 ?>

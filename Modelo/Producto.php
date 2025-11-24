@@ -1,6 +1,5 @@
 <?php
-class Producto extends BaseDatos
-{
+class Producto extends BaseDatos{
     private $idproducto;
     private $pronombre;
     private $prodetalle;
@@ -12,8 +11,7 @@ class Producto extends BaseDatos
     private $idusuario;
     private $proimagen;
 
-    public function __construct()
-    {
+    public function __construct(){
         parent::__construct();
         $this->idproducto       = 0;
         $this->pronombre        = "";
@@ -51,93 +49,70 @@ class Producto extends BaseDatos
         $this->proimagen        = $proimagen;
     }
 
-    // ========= Getters =========
-    public function getIdProducto()
-    {
+    public function getIdProducto(){
         return $this->idproducto;
     }
-    public function getProNombre()
-    {
+    public function getProNombre(){
         return $this->pronombre;
     }
-    public function getProDetalle()
-    {
+    public function getProDetalle(){
         return $this->prodetalle;
     }
-    public function getProPrecio()
-    {
+    public function getProPrecio(){
         return $this->proprecio;
     }
-    public function getProCantStock()
-    {
+    public function getProCantStock(){
         return $this->procantstock;
     }
-    public function getProoferta()
-    {
+    public function getProoferta(){
         return $this->prooferta;
     }
-    public function getProFinOffer()
-    {
+    public function getProFinOffer(){
         return $this->profinoffer;
     }
-    public function getProDeshabilitado()
-    {
+    public function getProDeshabilitado(){
         return $this->prodeshabilitado;
     }
-    public function getIdUsuario()
-    {
+    public function getIdUsuario(){
         return $this->idusuario;
     }
-    public function getProimagen()
-    {
+    public function getProimagen(){
         return $this->proimagen;
     }
 
-    // ========= Setters =========
-    public function setIdProducto($v)
-    {
+    public function setIdProducto($v){
         $this->idproducto = $v;
     }
-    public function setProNombre($v)
-    {
+    public function setProNombre($v){
         $this->pronombre = $v;
     }
-    public function setProDetalle($v)
-    {
+    public function setProDetalle($v){
         $this->prodetalle = $v;
     }
-    public function setProPrecio($v)
-    {
+    public function setProPrecio($v){
         $this->proprecio = $v;
     }
-    public function setProCantStock($v)
-    {
+    public function setProCantStock($v){
         $this->procantstock = $v;
     }
-    public function setProoferta($v)
-    {
+    public function setProoferta($v){
         $this->prooferta = $v;
     }
-    public function setProFinOffer($v)
-    {
+    public function setProFinOffer($v){
         $this->profinoffer = $v;
     }
-    public function setProDeshabilitado($v)
-    {
+    public function setProDeshabilitado($v){
         $this->prodeshabilitado = $v;
     }
-    public function setIdUsuario($v)
-    {
+    public function setIdUsuario($v){
         $this->idusuario = $v;
     }
-    public function setProimagen($v)
-    {
+    public function setProimagen($v){
         $this->proimagen = $v;
     }
 
     // ========= Precio Final con Oferta =========
-    public function getPrecioFinal()
-    {
+    public function getPrecioFinal(){
         if ($this->prooferta > 0) {
 
             // si hay fecha límite y la oferta expiró → ignorar oferta
@@ -264,3 +239,4 @@ class Producto extends BaseDatos
 
     
 }
+?>

@@ -35,26 +35,54 @@ class Usuario extends BaseDatos {
     }
 
    
-    public function getIdUsuario() { return $this->idusuario; }
-    public function setIdUsuario($idusuario) { $this->idusuario = $idusuario; }
+    public function getIdUsuario() { 
+        return $this->idusuario; 
+    }
+    public function setIdUsuario($idusuario) {
+         $this->idusuario = $idusuario; 
+        }
 
-    public function getUsNombre() { return $this->usnombre; }
-    public function setUsNombre($usnombre) { $this->usnombre = $usnombre; }
+    public function getUsNombre() { 
+        return $this->usnombre; 
+    }
+    public function setUsNombre($usnombre) { 
+        $this->usnombre = $usnombre; 
+    }
 
-    public function getUsPass() { return $this->uspass; }
-    public function setUsPass($uspass) { $this->uspass = $uspass; }
+    public function getUsPass() { 
+        return $this->uspass; 
+    }
+    public function setUsPass($uspass) {
+         $this->uspass = $uspass; 
+    }
 
-    public function getUsMail() { return $this->usmail; }
-    public function setUsMail($usmail) { $this->usmail = $usmail; }
+    public function getUsMail() { 
+        return $this->usmail; 
+    }
+    public function setUsMail($usmail) {
+         $this->usmail = $usmail; 
+    }
 
-    public function getUsDeshabilitado() { return $this->usdeshabilitado; }
-    public function setUsDeshabilitado($usdeshabilitado) { $this->usdeshabilitado = $usdeshabilitado; }
+    public function getUsDeshabilitado() { 
+        return $this->usdeshabilitado; 
+    }
+    public function setUsDeshabilitado($usdeshabilitado) {
+         $this->usdeshabilitado = $usdeshabilitado; 
+    }
 
-    public function getMensajeOperacion() { return $this->mensajeoperacion; }
-    public function setMensajeOperacion($valor) { $this->mensajeoperacion = $valor; }
+    public function getMensajeOperacion() { 
+        return $this->mensajeoperacion; 
+    }
+    public function setMensajeOperacion($valor) {
+         $this->mensajeoperacion = $valor; 
+    }
 
-    public function getRoles() { return $this->roles; }
-    public function setRoles($roles) { $this->roles = $roles; }
+    public function getRoles() { 
+        return $this->roles; 
+    }
+    public function setRoles($roles) { 
+        $this->roles = $roles; 
+    }
 
     public function cargarRoles() {
         $this->roles = [];
@@ -104,9 +132,7 @@ class Usuario extends BaseDatos {
         return $resp;
     }
 
-    // ============================================================
-    // INSERTAR
-    // ============================================================
+// INSERTAR    
 public function insertar() {
     $resp = false;
 
@@ -138,10 +164,7 @@ public function insertar() {
 }
 
 
-
-    // ============================================================
     // MODIFICAR
-    // ============================================================
     public function modificar() {
         $resp = false;
         $sql = "UPDATE usuario SET 

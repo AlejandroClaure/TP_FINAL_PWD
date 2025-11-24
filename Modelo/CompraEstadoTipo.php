@@ -1,7 +1,6 @@
 <?php
 
-class Compraestadotipo extends BaseDatos
-{
+class CompraEstadotipo extends BaseDatos{
     //ver los diferentes estados de la compra y sus posibles contextos de cambio
     //hacer la extensión con la BD
 
@@ -10,8 +9,7 @@ class Compraestadotipo extends BaseDatos
     private $cetdetalle;
     private $mensajeoperacion;
 
-    public function __construct()
-    {
+    public function __construct(){
         parent::__construct();
         $this->idcompraestadotipo="";
         $this->cetdescripcion="";
@@ -19,9 +17,8 @@ class Compraestadotipo extends BaseDatos
         $this->mensajeoperacion="";
     }
 
-    public function setear($idcompraestadotipo, $cetdescripcion, $cetdetalle)
-    {
-        $this->setID($idcompraestadotipo);
+    public function setear($idcompraestadotipo, $cetdescripcion, $cetdetalle){
+        $this->setIdCompraEstadoTipo($idcompraestadotipo);
         $this->setCetDescripcion($cetdescripcion);
         $this->setCetDetalle($cetdetalle);
     }
@@ -48,26 +45,24 @@ class Compraestadotipo extends BaseDatos
         return $this->cetdescripcion;
     }
 
-   
     public function setCetDescripcion($cetdescripcion){
         $this->cetdescripcion = $cetdescripcion;
 
     }
 
-    public function getID(){
+    public function getIdCompraEstadoTipo(){
         return $this->idcompraestadotipo;
     }
 
-    public function setID($idcompraestadotipo){
+    public function setIdCompraEstadoTipo($idcompraestadotipo){
         $this->idcompraestadotipo = $idcompraestadotipo;
 
     }
     
-    public function cargar()
-    {
+    public function cargar(){
         $resp = false;
         
-        $sql="SELECT * FROM compraestadotipo WHERE idcompraestadotipo = ".$this->getID();
+        $sql="SELECT * FROM compraestadotipo WHERE idcompraestadotipo = ".$this->getIdCompraEstadoTipo();
         if ($this->Iniciar()) {
             $res = $this->Ejecutar($sql);
             if ($res>-1) {
@@ -83,8 +78,7 @@ class Compraestadotipo extends BaseDatos
         return $resp;
     }
 
-    public function insertar()
-    {
+    public function insertar(){
         //Fecha ini poner fecha actual
         //Setear fecha fin cuando el admin apruebe la compra (fecha)
         $resp = false;
@@ -92,7 +86,7 @@ class Compraestadotipo extends BaseDatos
         // Si lleva ID Autoincrement, la consulta SQL no lleva dicho ID
         $sql="INSERT INTO compraestadotipo(idcompraestadotipo, cetdescripcion, cetdetalle) 
             VALUES('"
-            .$this->getID()."', '"
+            .$this->getIdCompraEstadoTipo()."', '"
             .$this->getCetdescripcion()."', '"
             .$this->getCetdetalle()."'
         );";
@@ -110,14 +104,13 @@ class Compraestadotipo extends BaseDatos
         return $resp;
     }
 
-    public function modificar()
-    {
+    public function modificar(){
         $resp = false;
         
         $sql="UPDATE compraestadotipo 
         SET cetdescripcion='".$this->getCetDescripcion()
         ."', cetdetalle='".$this->getCetDetalle()
-        ."' WHERE idcompraestadotipo='".$this->getID()."'";
+        ."' WHERE idcompraestadotipo='".$this->getIdCompraEstadoTipo()."'";
         if ($this->Iniciar()) {
             if ($this->Ejecutar($sql)) {
                 $resp = true;
@@ -130,11 +123,10 @@ class Compraestadotipo extends BaseDatos
         return $resp;
     }
 
-    public function eliminar()
-    {
+    public function eliminar(){
         $resp = false;
         
-        $sql="DELETE FROM compraestadotipo WHERE idcompraestadotipo=".$this->getID();
+        $sql="DELETE FROM compraestadotipo WHERE idcompraestadotipo=".$this->getIdCompraEstadoTipo();
         if ($this->Iniciar()) {
             if ($this->Ejecutar($sql)) {
                 return true;
@@ -147,8 +139,7 @@ class Compraestadotipo extends BaseDatos
         return $resp;
     }
 
-    public function listar($parametro="")
-    {
+    public function listar($parametro=""){
         $arreglo = array();
         
         $sql="SELECT * FROM compraestadotipo ";
@@ -159,7 +150,7 @@ class Compraestadotipo extends BaseDatos
         if ($res>-1) {
             if ($res>0) {
                 while ($row = $this->Registro()) {
-                    $obj= new compraEstadoTipo();
+                    $obj= new CompraEstadoTipo();
                     
                     $obj->setear($row['idcompraestadotipo'], $row['cetdescripcion'], $row['cetdetalle']);
                     array_push($arreglo, $obj);
@@ -170,8 +161,6 @@ class Compraestadotipo extends BaseDatos
         }
 
         return $arreglo;
-    }
-
-    
+    }    
 }
 ?>
