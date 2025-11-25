@@ -180,13 +180,17 @@ class AbmCompraEstado
  */
 public function revertirStockPorCancelacion($idCompra)
 {
+    // SOLO devolver stock si la compra fue aceptada antes
+    if (!$this->compraFueAceptada($idCompra)) {
+        return false;
+    }
+
     include_once $GLOBALS['CONTROL_PATH'] . 'AbmCompraItem.php';
     include_once $GLOBALS['CONTROL_PATH'] . 'AbmProducto.php';
 
     $abmItem = new AbmCompraItem();
     $abmProducto = new AbmProducto();
 
-    // Obtener items de la compra
     $items = $abmItem->buscar(['idcompra' => $idCompra]);
 
     foreach ($items as $item) {
@@ -199,7 +203,6 @@ public function revertirStockPorCancelacion($idCompra)
 
         $nuevoStock = $stockActual + $cantidad;
 
-        // Modificar usando ABMProducto
         $abmProducto->modificar([
             'idproducto'   => $producto->getIdProducto(),
             'pronombre'    => $producto->getProNombre(),
@@ -215,5 +218,23 @@ public function revertirStockPorCancelacion($idCompra)
 
     return true;
 }
+
+
+/**
+ * Retorna true si la compra tuvo alguna vez estado ACEPTADA (2)
+ */
+public function compraFueAceptada($idCompra)
+{
+    $lista = $this->buscar(['idcompra' => $idCompra]);
+
+    foreach ($lista as $estado) {
+        if ($estado->getObjCompraEstadoTipo()->getIdCompraEstadoTipo() == 2) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 
 }
