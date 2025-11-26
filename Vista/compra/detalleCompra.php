@@ -114,8 +114,7 @@ include_once "../estructura/cabecera.php";
             <thead class="table-secondary">
                 <tr>
                     <th>Estado</th>
-                    <th>Fecha Inicio</th>
-                    <th>Fecha Fin</th>
+                    <th>Fecha</th>
                 </tr>
             </thead>
             <tbody>
@@ -125,7 +124,6 @@ include_once "../estructura/cabecera.php";
                     <tr>
                         <td><strong><?= $tipo->getCetDescripcion(); ?></strong></td>
                         <td><?= $estado->getCeFechaIni(); ?></td>
-                        <td><?= $estado->getCeFechaFin() ?? '—'; ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
