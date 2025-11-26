@@ -43,11 +43,18 @@ CREATE TABLE `compra` (
 --
 
 INSERT INTO `compra` (`idcompra`, `cofecha`, `idusuario`) VALUES
-(46, '2025-11-23 07:27:15', 21),
-(47, '2025-11-24 00:57:52', 4),
-(48, '2025-11-23 22:55:15', 21),
-(49, '2025-11-24 00:32:19', 4),
-(50, '2025-11-24 14:26:01', 21);
+(71, '2025-11-24 23:23:49', 4),
+(72, '2025-11-25 06:08:41', 4),
+(73, '2025-11-25 06:09:46', 4),
+(74, '2025-11-25 06:11:10', 4),
+(75, '2025-11-25 06:11:12', 4),
+(76, '2025-11-25 06:11:16', 4),
+(77, '2025-11-25 06:12:21', 4),
+(78, '2025-11-25 06:13:00', 4),
+(79, '2025-11-25 06:21:09', 4),
+(80, '2025-11-25 06:26:58', 4),
+(81, '2025-11-25 06:27:49', 4),
+(82, '2025-11-26 04:06:30', 23);
 
 -- --------------------------------------------------------
 
@@ -68,13 +75,18 @@ CREATE TABLE `compraestado` (
 --
 
 INSERT INTO `compraestado` (`idcompraestado`, `idcompra`, `idcompraestadotipo`, `cefechaini`, `cefechafin`) VALUES
-(24, 46, 1, '2025-11-23 07:27:15', '2025-11-23 07:32:18'),
-(25, 46, 4, '2025-11-23 07:32:18', NULL),
-(26, 47, 1, '2025-11-24 00:57:52', NULL),
-(27, 48, 1, '2025-11-23 22:55:15', '2025-11-24 03:07:45'),
-(28, 48, 2, '2025-11-24 03:07:44', NULL),
-(29, 49, 1, '2025-11-24 00:32:20', NULL),
-(30, 50, 1, '2025-11-24 14:26:01', NULL);
+(61, 72, 1, '2025-11-25 06:08:41', '2025-11-26 12:23:28'),
+(62, 77, 1, '2025-11-25 06:12:21', '2025-11-25 21:54:05'),
+(63, 78, 1, '2025-11-25 06:13:01', NULL),
+(64, 80, 1, '2025-11-25 06:26:58', '2025-11-25 21:51:02'),
+(65, 81, 1, '2025-11-25 06:27:50', '2025-11-25 21:47:24'),
+(66, 81, 2, '2025-11-25 21:47:24', '2025-11-25 21:49:25'),
+(67, 81, 4, '2025-11-25 21:49:25', NULL),
+(68, 80, 4, '2025-11-25 21:51:02', NULL),
+(69, 77, 4, '2025-11-25 21:54:05', NULL),
+(70, 82, 1, '2025-11-26 04:06:31', NULL),
+(71, 72, 2, '2025-11-26 12:23:28', '2025-11-26 12:23:36'),
+(72, 72, 4, '2025-11-26 12:23:35', NULL);
 
 -- --------------------------------------------------------
 
@@ -117,14 +129,14 @@ CREATE TABLE `compraitem` (
 --
 
 INSERT INTO `compraitem` (`idcompraitem`, `idproducto`, `idcompra`, `cicantidad`) VALUES
-(35, 56, 47, 2),
-(36, 53, 47, 1),
-(38, 55, 48, 1),
-(40, 56, 49, 2),
-(41, 53, 49, 1),
-(42, 55, 49, 1),
-(43, 56, 46, 1),
-(44, 56, 50, 1);
+(91, 55, 77, 1),
+(94, 55, 79, 1),
+(95, 53, 79, 1),
+(96, 55, 80, 1),
+(97, 53, 80, 1),
+(100, 55, 81, 2),
+(101, 56, 81, 1),
+(102, 57, 72, 1);
 
 -- --------------------------------------------------------
 
@@ -146,8 +158,15 @@ CREATE TABLE `menu` (
 --
 
 INSERT INTO `menu` (`idmenu`, `menombre`, `melink`, `medescripcion`, `idpadre`, `medeshabilitado`) VALUES
-(179, 'celulares', 'celulares.php', 'celulares.php', NULL, NULL),
-(188, 'Samsung', 'celulares/samsung.php', 'celulares/samsung.php', 179, NULL);
+(179, 'celulares', 'celulares.php', 'celulares.php', NULL, '0000-00-00 00:00:00'),
+(188, 'Samsung', 'celulares/samsung.php', 'celulares/samsung.php', 179, '0000-00-00 00:00:00'),
+(189, 'Apple', 'celulares/apple.php', 'celulares/apple.php', 179, '0000-00-00 00:00:00'),
+(191, 'Xiaomi', 'celulares/xiaomi.php', 'celulares/xiaomi.php', 179, '0000-00-00 00:00:00'),
+(192, 'Accesorios', 'accesorios.php', 'accesorios.php', NULL, '0000-00-00 00:00:00'),
+(193, 'Auriculares', 'accesorios/auriculares.php', 'accesorios/auriculares.php', 192, '0000-00-00 00:00:00'),
+(194, 'Accesorios', 'celulares/samsung/accesorios.php', 'celulares/samsung/accesorios.php', 188, '0000-00-00 00:00:00'),
+(195, 'Poco', 'celulares/poco.php', 'celulares/poco.php', 179, '0000-00-00 00:00:00'),
+(196, 'Motorola', 'celulares/motorola.php', 'celulares/motorola.php', 179, '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -184,9 +203,13 @@ CREATE TABLE `producto` (
 --
 
 INSERT INTO `producto` (`idproducto`, `pronombre`, `prodetalle`, `proprecio`, `prooferta`, `profinoffer`, `proimagen`, `procantstock`, `idusuario`, `prodeshabilitado`) VALUES
-(53, 'celulares_motorola_Moto Edge 50 Pro+', 'El Motorola Edge 50 Pro combina diseño y tecnología de punta para ofrecer una experiencia móvil superior.', 80000.00, 5, NULL, 'Moto_Edge_50_Pro_1763822539.png', 6, 4, NULL),
-(55, 'celulares_apple_ipad air', 'Apple iPad Air 11, chip M3, Wi-Fi, 128 GB, gris espacial - Distribuidor Autorizado', 1556999.00, 0, NULL, 'ipad_air_1763827015.png', 5, 4, NULL),
-(56, 'celulares_samsung_Samsung Galaxy A55', 'alto samsung', 654645.00, 0, NULL, 'Samsung_Galaxy_A55_1763859572.webp', 7, 4, NULL);
+(53, 'celulares_motorola_Moto Edge 50 Pro+', 'El Motorola Edge 50 Pro combina diseño y tecnología de punta para ofrecer una experiencia móvil superior .', 86000.00, 8, NULL, 'Moto_Edge_50_pro_1763822217.png', 10, 4, NULL),
+(55, 'celulares_apple_ipad air', 'Apple iPad Air 11, chip M3, Wi-Fi, 128 GB, gris espacial - Distribuidor Autorizado', 1556999.00, 0, NULL, 'ipad_air_1763827015.png', 6, 4, NULL),
+(56, 'celulares_samsung_Samsung Galaxy A55', 'alto samsung', 654645.00, 0, NULL, 'Samsung_Galaxy_A55_1763859572.webp', 10, 4, NULL),
+(57, 'celulares_samsung_accesorios_SAMSUNG GALAXY BUDS', 'SAMSUNG Galaxy Buds FE True Auriculares Bluetooth inalámbricos, comodidad y seguridad en el oído, audio de interruptor automático, control táctil, asistente de voz integrado, grafito [versión de EE.\r\n4.34.3 de 5 estrellas (7.2 K)', 25000.00, 0, NULL, 'SAMSUNG_Galaxy_Buds_FE_1764100982.jpg', 3, 4, NULL),
+(58, 'celulares_xiaomi_xiaomi 13', 'xiaomi weno', 800000.00, 0, NULL, 'xiaomi_13_1764105975.jpg', 8, 4, NULL),
+(61, 'celulares_samsung_Samsung S24 Ultra', 'samsung ultra caro con IA', 900000.00, 0, NULL, 'Samsung_S24_Ultra_1764106552.webp', 9, 4, NULL),
+(62, 'celulares_poco_Poco X6 Pro', 'buen celu', 180000.00, 0, NULL, 'Poco_X6_Pro_1764162715.jpg', 9, 4, NULL);
 
 -- --------------------------------------------------------
 
@@ -206,7 +229,7 @@ CREATE TABLE `rol` (
 INSERT INTO `rol` (`idrol`, `rodescripcion`) VALUES
 (1, 'admin'),
 (2, 'cliente'),
-(4, 'Deposito');
+(3, 'deposito');
 
 -- --------------------------------------------------------
 
@@ -228,7 +251,8 @@ CREATE TABLE `usuario` (
 
 INSERT INTO `usuario` (`idusuario`, `usnombre`, `uspass`, `usmail`, `usdeshabilitado`) VALUES
 (4, 'ale.c', '$2y$10$ASSBVgrb9t7YGQifGPpuM.dCo/DchUPveYjg/DocsNg7/rv0rVXDm', 'alejandro.claure@est.fi.uncoma.edu.ar', NULL),
-(21, 'cliente', '$2y$10$FZP0Q4SOyfwQ3P8obrgWp.4JIt7kDNl5plDMArYZUHdT4DyJzB9Ki', 'cliente@gmail.com', NULL);
+(21, 'cliente', '$2y$10$FZP0Q4SOyfwQ3P8obrgWp.4JIt7kDNl5plDMArYZUHdT4DyJzB9Ki', 'cliente@gmail.com', NULL),
+(23, 'cliente3', '$2y$10$hcPxfjN6QMgY28x9NHODQuXdjygpdcMlKkz6jvBW13ZCRMmHzZSna', 'cliente3@gmail.com', NULL);
 
 -- --------------------------------------------------------
 
@@ -248,7 +272,9 @@ CREATE TABLE `usuariorol` (
 INSERT INTO `usuariorol` (`idusuario`, `idrol`) VALUES
 (4, 1),
 (4, 2),
-(21, 2);
+(4, 3),
+(21, 2),
+(23, 2);
 
 --
 -- Índices para tablas volcadas
@@ -334,43 +360,43 @@ ALTER TABLE `usuariorol`
 -- AUTO_INCREMENT de la tabla `compra`
 --
 ALTER TABLE `compra`
-  MODIFY `idcompra` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `idcompra` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
 
 --
 -- AUTO_INCREMENT de la tabla `compraestado`
 --
 ALTER TABLE `compraestado`
-  MODIFY `idcompraestado` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `idcompraestado` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT de la tabla `compraitem`
 --
 ALTER TABLE `compraitem`
-  MODIFY `idcompraitem` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `idcompraitem` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=103;
 
 --
 -- AUTO_INCREMENT de la tabla `menu`
 --
 ALTER TABLE `menu`
-  MODIFY `idmenu` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=189;
+  MODIFY `idmenu` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=197;
 
 --
 -- AUTO_INCREMENT de la tabla `producto`
 --
 ALTER TABLE `producto`
-  MODIFY `idproducto` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
+  MODIFY `idproducto` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT de la tabla `rol`
 --
 ALTER TABLE `rol`
-  MODIFY `idrol` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `idrol` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `idusuario` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `idusuario` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Restricciones para tablas volcadas

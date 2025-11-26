@@ -88,9 +88,11 @@ foreach ($menus as $m) {
                      <a class="nav-link" href="<?= $GLOBALS['VISTA_URL']; ?>producto/producto.php">Productos</a>
                   </li>
 
+                  <?php if ($usuario && $session->tieneRol('cliente')): ?>
                   <li class="nav-item">
                      <a class="nav-link" href="<?= $GLOBALS['VISTA_URL']; ?>compra/carrito.php">Carrito</a>
                   </li>
+                  <?php endif; ?>
 
                   <li class="nav-item">
                      <a class="nav-link" href="<?= $GLOBALS['VISTA_URL']; ?>contacto/contacto.php">Contacto</a>
