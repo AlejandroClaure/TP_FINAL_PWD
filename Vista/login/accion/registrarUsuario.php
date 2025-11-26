@@ -1,23 +1,31 @@
 <?php
 require_once '../../../configuracion.php';
 
-error_log("Datos recibidos: " . print_r($_POST, true));
+error_log("Datos recibidos en registro: " . print_r($_POST, true));
 
 $auth = new AbmAuth();
+
+// Llamamos al método que ahora devuelve un array con más información
 $resultado = $auth->registrarYLogin($_POST);
 
-if ($resultado === true) {
-    error_log("Entró a crear usuario");
-    header("Location: ../login.php?ok=1");
+if ($resultado['success']) {
+    // ¡ÉXITO! El usuario ya está logueado gracias a $session->iniciar()
+    // Puedes redirigir a donde quieras que vaya un usuario recién registrado
+    header("Location: ../../../index.php");  // o ../dashboard.php, etc.
     exit;
 }
 
-if ($resultado === "email_duplicado") {
+// ----------------- ERRORES -----------------
+if ($resultado['error'] === 'email_duplicado') {
     header("Location: ../login.php?email_duplicado=1");
     exit;
 }
 
-// Error general
-error_log("Error al crear el usuario");
+if ($resultado['error'] === 'creacion_fallida') {
+    header("Location: ../login.php?error_registro=1");
+    exit;
+}
+
+// Error genérico (por si acaso)
 header("Location: ../login.php?error=1");
 exit;
