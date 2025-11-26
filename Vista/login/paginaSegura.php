@@ -112,7 +112,7 @@ include_once "../estructura/cabecera.php";
         <?php endforeach; ?>
     </div>
 
-    <a href="../login/cerrarSesion.php" class="btn btn-danger mt-4">Cerrar sesión</a>
+    <a href="../login/accion/cerrarSesion.php" class="btn btn-danger mt-4">Cerrar sesión</a>
 
 </div>
 

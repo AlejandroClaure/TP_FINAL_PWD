@@ -67,8 +67,8 @@ include_once "../estructura/cabecera.php";
 
     <?php endif; ?>
 
-    <a href="../login/panelCliente.php" class="btn btn-secondary mt-3">
-        ← Volver al panel
+    <a href="../../index.php" class="btn btn-secondary mt-3">
+        ← Volver a la página principal 
     </a>
 
 </div>
