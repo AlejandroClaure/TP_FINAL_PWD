@@ -2,9 +2,20 @@
 require_once "../../configuracion.php";
 $session = new Session();
 
-if (!$session->tieneRol("vendedor") && !$session->tieneRol("admin")) {
-    die("No tiene permiso para ver esta página.");
+// Si no está logueado → login
+if (!$session->activa()) {
+    header("Location: " . $GLOBALS['VISTA_URL'] . "login/login.php");
+    exit;
 }
+
+// Si no es admin → no autorizado
+if (!$session->esAdmin()) {
+    header("Location: " . $GLOBALS['VISTA_URL'] . "error/noAutorizado.php");
+    exit;
+}
+
+// Ya estás 100% seguro: hay usuario logueado y es admin
+$usuario = $session->getUsuario();
 
 $usuario = $session->getUsuario();
 $abm = new AbmProducto();

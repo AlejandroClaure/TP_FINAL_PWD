@@ -81,7 +81,7 @@ class Session
         return $this->validar();
     }
 
-   /**
+    /**
      * Devuelve el objeto usuario actualmente logueado
      */
     public function getUsuario()
@@ -112,5 +112,13 @@ class Session
     public function tieneRol($rolDescripcion)
     {
         return isset($_SESSION['roles']) && in_array($rolDescripcion, $_SESSION['roles']);
+    }
+
+    /**
+     * Verifica si el usuario es Administrador
+     */
+    public function esAdmin()
+    {
+        return $this->tieneRol('admin');
     }
 }

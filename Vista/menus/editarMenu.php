@@ -4,12 +4,21 @@ include_once dirname(__DIR__, 2) . '/configuracion.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 $session = new Session();
-$usuario = $session->getUsuario();
-$rolesUsuario = $usuario ? (new AbmUsuarioRol())->rolesDeUsuario($usuario->getIdUsuario()) : [];
-if (!$usuario || !in_array("admin", $rolesUsuario)) {
-    header("Location: " . $GLOBALS['VISTA_URL'] . "login/paginaSegura.php");
+
+// Si no está logueado → login
+if (!$session->activa()) {
+    header("Location: " . $GLOBALS['VISTA_URL'] . "login/login.php");
     exit;
 }
+
+// Si no es admin → no autorizado
+if (!$session->esAdmin()) {
+    header("Location: " . $GLOBALS['VISTA_URL'] . "error/noAutorizado.php");
+    exit;
+}
+
+// Ya estás 100% seguro: hay usuario logueado y es admin
+$usuario = $session->getUsuario();
 
 $abmMenu = new AbmMenu();
 $idmenu = $_GET['idmenu'] ?? null;

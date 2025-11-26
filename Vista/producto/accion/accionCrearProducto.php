@@ -4,12 +4,15 @@ include_once dirname(__DIR__, 3) . '/Control/AbmProducto.php';
 include_once dirname(__DIR__, 3) . '/Control/Session.php';
 
 $session = new Session();
-$usuario = $session->getUsuario();
-
-if (!$usuario) {
-    header("Location: " . $GLOBALS['VISTA_URL'] . "login/paginaSegura.php");
+if (!$session->activa()) {
+    header("Location: " . $GLOBALS['VISTA_URL'] . "login/login.php");
     exit;
 }
+if (!$session->esAdmin()) {
+    header("Location: " . $GLOBALS['VISTA_URL'] . "error/noAutorizado.php");
+    exit;
+}
+$usuario = $session->getUsuario();
 
 $datos = [
     'pronombre'     => $_POST['pronombre'] ?? '',

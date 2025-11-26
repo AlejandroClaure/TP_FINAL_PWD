@@ -7,14 +7,21 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $session = new Session();
-$usuario = $session->getUsuario();
 
-// Seguridad: solo admin
-$rolesUsuario = $usuario ? (new AbmUsuarioRol())->rolesDeUsuario($usuario->getIdUsuario()) : [];
-if (!$usuario || !in_array("admin", $rolesUsuario)) {
-    header("Location: " . $GLOBALS['VISTA_URL'] . "login/paginaSegura.php");
+// Si no está logueado → login
+if (!$session->activa()) {
+    header("Location: " . $GLOBALS['VISTA_URL'] . "login/login.php");
     exit;
 }
+
+// Si no es admin → no autorizado
+if (!$session->esAdmin()) {
+    header("Location: " . $GLOBALS['VISTA_URL'] . "error/noAutorizado.php");
+    exit;
+}
+
+// Ya estás 100% seguro: hay usuario logueado y es admin
+$usuario = $session->getUsuario();
 
 $abmMenu = new AbmMenu();
 $menus = $abmMenu->buscar(null) ?? [];
@@ -387,6 +394,7 @@ include_once dirname(__DIR__, 1) . '/estructura/cabecera.php';
                                                                         <button type="submit" class="btn btn-primary">OK</button>
                                                                     </div>
                                                                 </form>
+                                                                
 
                                                                 <!-- Cambiar Stock -->
                                                                 <form action="../producto/accion/accionEditarStockProducto.php" method="POST" class="d-inline">
