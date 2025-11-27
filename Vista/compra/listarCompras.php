@@ -37,9 +37,25 @@ include_once '../estructura/cabecera.php';
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($todasLasCompras as $compra): 
-                        $estado = $abmEstado->obtenerEstadoActual($compra->getIdCompra());
-                        $tipoEstado = $estado ? $estado->getObjCompraEstadoTipo()->getCeTDescripcion() : 'desconocido';
+                    <?php foreach ($todasLasCompras as $compra):
+                        $idUsuario = $compra->getObjUsuario()->getIdUsuario();
+
+                        // Detectar si es la primera compra de este usuario
+                        if (!isset($primerasCompras[$idUsuario])) {
+
+                            $primerasCompras[$idUsuario] = true; // marcar que ya vimos su primera compra
+
+                            // Obtener el estado real
+                            $estado = $abmEstado->obtenerEstadoActual($compra->getIdCompra());
+                            $tipoEstado = $estado ? $estado->getObjCompraEstadoTipo()->getCeTDescripcion() : 'desconocido';
+
+                            // 👉 SI está "iniciada", OCULTARLA y seguir con la siguiente
+                            if ($tipoEstado === 'iniciada') {
+                                continue;
+                            }
+                        }
+
+                        // Calcular total de la compra
                         $items = (new AbmCompraItem())->buscar(['idcompra' => $compra->getIdCompra()]);
                         $total = 0;
                         foreach ($items as $item) {
@@ -47,27 +63,27 @@ include_once '../estructura/cabecera.php';
                             $total += $prod->getProPrecio() * $item->getCiCantidad();
                         }
                     ?>
-                    <tr>
-                        <td><strong>#<?= $compra->getIdCompra() ?></strong></td>
-                        <td><?= htmlspecialchars($compra->getObjUsuario()->getUsNombre()) ?></td>
-                        <td><?= date('d/m/Y H:i', strtotime($compra->getCoFecha())) ?></td>
-                        <td>
-                            <span class="badge 
-                                <?= $tipoEstado=='iniciada'?'bg-warning':
-                                    ($tipoEstado=='aceptada'?'bg-primary':
-                                    ($tipoEstado=='enviada'?'bg-success':'bg-danger')) ?>">
-                                <?= ucfirst($tipoEstado) ?>
-                            </span>
-                        </td>
-                        <td>$<?= number_format($total, 0, ',', '.') ?></td>
-                        <td>
-                            <a href="verCompraAdmin.php?id=<?= $compra->getIdCompra() ?>" class="btn btn-sm btn-info">
-                                Ver detalle
-                            </a>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td><strong>#<?= $compra->getIdCompra() ?></strong></td>
+                            <td><?= htmlspecialchars($compra->getObjUsuario()->getUsNombre()) ?></td>
+                            <td><?= date('d/m/Y H:i', strtotime($compra->getCoFecha())) ?></td>
+                            <td>
+                                <span class="badge 
+            <?= $tipoEstado == 'iniciada' ? 'bg-warning' : ($tipoEstado == 'aceptada' ? 'bg-primary' : ($tipoEstado == 'enviada' ? 'bg-success' : 'bg-danger')) ?>">
+                                    <?= ucfirst($tipoEstado) ?>
+                                </span>
+                            </td>
+                            <td>$<?= number_format($total, 0, ',', '.') ?></td>
+                            <td>
+                                <a href="verCompraAdmin.php?id=<?= $compra->getIdCompra() ?>" class="btn btn-sm btn-info">
+                                    Ver detalle
+                                </a>
+                            </td>
+                        </tr>
                     <?php endforeach; ?>
+
                 </tbody>
+
             </table>
         </div>
     <?php endif; ?>

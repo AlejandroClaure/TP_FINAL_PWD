@@ -41,34 +41,52 @@ include_once "../estructura/cabecera.php";
                 </thead>
 
                 <tbody>
-                    <?php foreach ($compras as $compra): ?>
-                        <tr>
-                            <td><?= $compra->getIdcompra(); ?></td>
-                            <td><?= $compra->getCoFecha(); ?></td>
-                            <td>
-                                <span class="badge bg-primary">
-                                    <?= $compra->getEstadoActualDescripcion(); ?>
-                                </span>
-                            </td>
-                            <td>
-                                $<?= number_format($compra->getTotal(), 2, ',', '.'); ?>
-                            </td>
-                            <td>
-                                <a href="detalleCompra.php?id=<?= $compra->getIdcompra(); ?>"
-                                   class="btn btn-sm btn-outline-primary">
-                                    Ver detalle
-                                </a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
+    <?php 
+    $primerCompraOculta = false;
+
+    foreach ($compras as $compra): 
+        
+        // Detectar la primera compra del usuario
+        if (!$primerCompraOculta) {
+            $primerCompraOculta = true;
+            continue;   // ❌ No mostrar la primera compra
+        }
+
+        // Obtener estado real
+        $estado = $compra->getEstadoActualDescripcion();
+
+        // Color del badge
+        $badgeClass = "bg-primary";
+    ?>
+        <tr>
+            <td><?= $compra->getIdcompra(); ?></td>
+            <td><?= $compra->getCoFecha(); ?></td>
+            <td>
+                <span class="badge <?= $badgeClass ?>">
+                    <?= $estado; ?>
+                </span>
+            </td>
+            <td>
+                $<?= number_format($compra->getTotal(), 2, ',', '.'); ?>
+            </td>
+            <td>
+                <a href="detalleCompra.php?id=<?= $compra->getIdcompra(); ?>"
+                   class="btn btn-sm btn-outline-primary">
+                    Ver detalle
+                </a>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+</tbody>
+
+
             </table>
         </div>
 
     <?php endif; ?>
 
     <a href="../../index.php" class="btn btn-secondary mt-3">
-        ← Volver a la página principal 
+        ← Volver a la página principal
     </a>
 
 </div>

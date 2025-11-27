@@ -231,7 +231,7 @@ include_once dirname(__DIR__, 1) . '/estructura/cabecera.php';
                             $prefijo = $nivel > 0 ? '└─ ' : '';
                             $colorFondo = !$esVisible ? 'background-color: #f8d7da;' : '';
                     ?>
-                            <div class="list-group-item border-0" style="<?= $colorFondo ?>">
+                            <div class="list-group-item border" style="<?= $colorFondo ?>">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <strong>
