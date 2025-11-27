@@ -270,7 +270,7 @@ class AbmProducto
 
 
     /*
- * actualizar producto
+ * crea producto
  *
  * @param Session $session  Objeto sesión ya iniciado desde el archivo de acción
  */
@@ -309,7 +309,7 @@ class AbmProducto
 
 
     /*
- * actualizar producto
+ * edita precio producto
  *
  * @param Session $session  Objeto sesión ya iniciado desde el archivo de acción
  */
@@ -354,7 +354,7 @@ class AbmProducto
 
 
     /*
- * actualizar producto
+ * edita stock producto
  *
  * @param Session $session  Objeto sesión ya iniciado desde el archivo de acción
  */
@@ -399,7 +399,7 @@ class AbmProducto
 
 
     /*
- * actualizar producto
+ * eliminaProducto
  *
  * @param Session $session  Objeto sesión ya iniciado desde el archivo de acción
  */
