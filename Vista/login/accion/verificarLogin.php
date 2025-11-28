@@ -1,13 +1,12 @@
 <?php
-include_once '../../../configuracion.php';
-
+require_once dirname(__DIR__, 3) . '/util/funciones.php';
+require_once dirname(__DIR__, 3) . '/configuracion.php';
 // Creo la sesión
 $session = new Session();
+$datos = data_submitted();
 
-// Obtengo datos enviados desde login.php
-$usnombre = $_POST['usnombre'] ?? '';
-$uspass   = $_POST['uspass'] ?? '';
-
+$usnombre = $datos['usnombre'] ?? '';
+$uspass   = $datos['uspass'] ?? '';
 // Intento iniciar sesión
 if ($session->iniciar($usnombre, $uspass)) {
 
