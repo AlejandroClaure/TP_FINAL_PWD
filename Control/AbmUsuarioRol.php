@@ -171,28 +171,39 @@ class AbmUsuarioRol
 
         $_SESSION['mensaje'] = $result['msg'];
 
-        header("Location: ../panelRoles.php");
-        exit;
+        // Retornar el estado y mensaje
+        return [
+            "estado" => $result['estado'] ?? false,
+            "msg"    => $result['msg'] ?? ''
+        ];
     }
 
     public function accionRolesDelUsuario($idusuario)
     {
 
+        // Validaciones
         if (!$idusuario || !is_numeric($idusuario)) {
-            echo json_encode([]);
-            exit;
+            return [
+            "estado" => false,
+            "error"  => "id_invalido",
+            "data"   => []
+            ];
         }
-
         try {
             $abmUR = new AbmUsuarioRol();
             $roles = $abmUR->rolesDeUsuarioConID($idusuario);
-            echo json_encode($roles, JSON_UNESCAPED_UNICODE);
+            return [
+                "estado" => true,
+                "data"   => $roles
+            ];
         } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode(['error' => 'Error en el servidor']);
-        }
+            return [
+                "estado" => false,
+                "error"  => "server_error",
+                "data"   => []
+            ];
 
-        exit;
+        }
     }
 
 
