@@ -126,7 +126,7 @@ Celulandia es una aplicación web desarrollada en PHP bajo arquitectura MVC. Per
 ### 📂 Estructura del Proyecto Completa
 
     PWD_TPFinal/
-    ├── Archivos/           # Imágenes cargadas
+    ├── Archivos/           # pdf compras realizadas
     ├── Control/
     │   ├── Acciones/       # Acciones directas (headers, JSON, etc.)
     │   ├── Abm*.php        # Controladores ABM
@@ -148,7 +148,8 @@ Celulandia es una aplicación web desarrollada en PHP bajo arquitectura MVC. Per
     ├── logs/
     ├── bdcarritocompras.sql
     ├── configuracion.php
-    └── index.php
+    ├── index.php
+    └── README.md -> Usted esta aquí
 
 ### 🔒 Seguridad
 
