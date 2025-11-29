@@ -9,4 +9,27 @@ include_once $GLOBALS['CONTROL_PATH'] . 'Session.php';
 
 $session = new Session();
 $abmMenu = new AbmMenu();
-$abmMenu->eliminarMenus($session);
+$resultado = $abmMenu->eliminarMenus($session);
+// Decido la redirección según resultado
+if (!$resultado['estado']) {
+
+    switch ($resultado['error']) {
+        case 'no_sesion':
+            header("Location: " . $GLOBALS['VISTA_URL'] . "login/login.php");
+            break;
+
+        case 'no_admin':
+            header("Location: ../gestionMenus.php?error=permiso");
+            break;
+
+        case 'id_invalido':
+            header("Location: ../gestionMenus.php?error=id");
+            break;
+    }
+
+    exit;
+}
+
+// Si todo salió bien
+header("Location: ../gestionMenus.php?ok=1");
+exit;

@@ -110,12 +110,12 @@ class AbmMenu
         $menu = $this->buscar(["idmenu" => $idmenu])[0] ?? null;
         if (!$menu) return false;
 
-        // 🔹 Generar nuevo slug
+        // Generar nuevo slug
         $slug = strtolower(trim($menombreNuevo));
         $slug = preg_replace('/[^a-z0-9]+/', '-', $slug);
         $slug = trim($slug, "-");
 
-        // 🔹 Nueva ruta
+        //  Nueva ruta
         if ($tipo === "raiz") {
             $nuevaRuta = $slug . ".php";
         } else {
@@ -127,17 +127,17 @@ class AbmMenu
         $rutaActualFull = $GLOBALS['VISTA_PATH'] . "secciones/" . $menu->getMeLink();
         $rutaNuevaFull  = $GLOBALS['VISTA_PATH'] . "secciones/" . $nuevaRuta;
 
-        // 🔹 Renombrar archivo físico
+        // Renombrar archivo físico
         if (file_exists($rutaActualFull)) {
             $dirNueva = dirname($rutaNuevaFull);
             if (!is_dir($dirNueva)) mkdir($dirNueva, 0777, true);
             rename($rutaActualFull, $rutaNuevaFull);
         }
 
-        // 🔹 Evitar ser padre de sí mismo
+        // Evitar ser padre de sí mismo
         if ($idPadre == $idmenu) $idPadre = null;
 
-        // 🔹 Actualizar objeto Menu
+        // Actualizar objeto Menu
         $menu->setMeNombre($menombreNuevo);
         $menu->setMeLink($nuevaRuta);
         $menu->setMeDescripcion($nuevaRuta);
@@ -237,7 +237,7 @@ class AbmMenu
             $where .= " AND menombre LIKE '%" . addslashes($param["menombre"]) . "%'";
         }
 
-        // 🔥 Filtro correcto para DATETIME
+        //  Filtro correcto para DATETIME
         if (isset($param["medeshabilitado"])) {
             $valor = addslashes($param["medeshabilitado"]);
 
@@ -582,36 +582,39 @@ PHP;
        ===============  Correccion de accion ==========================
        ============================================================ */
     
-    public function eliminarMenus($session){
+    public function accionEliminarMenus($session){
 
-        if (!$session->activa() || !$session->tieneRol('admin')) {
-        header("Location: " . $GLOBALS['VISTA_URL'] . "login/login.php");
-        exit;
+        // 1. Verificar sesión activa
+        if (!$session->activa()) {
+            return ['estado' => false, 'error' => 'no_sesion'];
         }
 
-        // === Obtener ID y validar ===
+        // 2. Verificar rol admin
+        if (!$session->tieneRol('admin')) {
+            return ['estado' => false, 'error' => 'no_admin'];
+        }
+
+        // 3. Validar ID
         $idmenu = intval($_GET['idmenu'] ?? 0);
         if ($idmenu <= 0) {
-            header("Location: ../gestionMenus.php?error=1");
-            exit;
+            return ['estado' => false, 'error' => 'id_invalido'];
         }
 
-        // === Ejecutar eliminación completa (todo en el ABM) ===
+        // 4. Ejecutar la eliminación
         $abmMenu = new AbmMenu();
         $exito = $abmMenu->eliminarMenuCompleto($idmenu);
 
-        // === Redirigir con mensaje ===
-        header("Location: ../gestionMenus.php?" . ($exito ? "ok=1" : "error=2"));
-        exit;
+        // 5. Retornar resultado
+        return ['estado' => $exito];
     }
 
-    public function toggleVisibilidad($abm,$id){
+    public function accionToggleVisibilidad($abm,$id){
 
+        // Buscar menú
         $menuArr = $abm->buscar(["idmenu" => $id]);
 
-        if (empty($menuArr)) {
-            header("Location: ../gestionMenus.php?ok=0");
-            exit;
+       if (empty($menuArr)) {
+            return ["estado" => false, "error" => "no_encontrado"];
         }
 
         $menu = $menuArr[0];
@@ -632,9 +635,12 @@ PHP;
             "medeshabilitado" => $nuevoEstado
         ];
 
-        $abm->modificar($datos);
+        // Ejecutar actualización
+        $ok = $abm->modificar($datos);
 
-        header("Location: ../gestionMenus.php?toggle=1");
-        exit;
+        return [
+            "estado" => $ok,
+            "nuevoEstado" => $nuevoEstado
+        ];
     }
 }
