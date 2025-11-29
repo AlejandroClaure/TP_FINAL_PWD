@@ -422,8 +422,8 @@ class AbmProducto
         exit;
     }
 
-
-    /*
+    
+  /*
  * cambia la visibilidad del propducto
  *
  * @param Session $session  Objeto sesión ya iniciado desde el archivo de acción

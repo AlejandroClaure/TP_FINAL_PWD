@@ -6,4 +6,3 @@ include_once dirname(__DIR__, 3) . '/Control/Session.php';
 $session = new Session();
 $abm = new AbmProducto();
 $abm-> toggleVisibilidadProducto($session);
-
