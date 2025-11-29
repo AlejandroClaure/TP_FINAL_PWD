@@ -76,7 +76,7 @@ include_once "../estructura/cabecera.php";
                     <div class="card-body">
                         <h5 class="card-title">Mi Cuenta</h5>
                         <p class="card-text">Gestioná tus datos personales.</p>
-                        <a href="../usuarios/editarUsuario.php" class="btn btn-primary w-100">Editar mi cuenta</a>
+                        <a href="../usuario/editarUsuario.php" class="btn btn-primary w-100">Editar mi cuenta</a>
                     </div>
                 </div>
             </div>

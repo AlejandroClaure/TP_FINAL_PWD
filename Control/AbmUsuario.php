@@ -137,47 +137,56 @@ class AbmUsuario
     }
 
 
-    /*
- * cambia la visibilidad del propducto
- *
- * @param Session $session  Objeto sesión ya iniciado desde el archivo de acción
+/**
+ * Crea un nuevo usuario
+ * @param string $nombre   Nombre del usuario
+ * @param string $mail     Email
+ * @param string $pass     Contraseña en texto plano (se hashea dentro)
+ * @return bool            true = creado, false = falló o ya existe
  */
-    public function crearUsuario()
-    {
-        $abm = new AbmUsuario();
-        $param = [
-            "usnombre" => $_POST["usnombre"],
-            "usmail"   => $_POST["usmail"],
-            "uspass"   => $_POST["uspass"]
-        ];
-
-        $abm->alta($param);
-
-        // Redirige al panel
-        header("Location: ../panelUsuarios.php?ok=1");
-        exit;
+public function crearUsuario($nombre, $mail, $pass)
+{
+    // Validación básica (nunca está de más)
+    if (empty(trim($nombre)) || empty(trim($mail)) || empty($pass)) {
+        return false;
     }
 
+    $abm = new AbmUsuario();
 
-    /*
- * cambia la visibilidad del propducto
- *
- * @param Session $session  Objeto sesión ya iniciado desde el archivo de acción
+    $param = [
+        "usnombre"       => trim($nombre),
+        "usmail"         => trim($mail),
+        "uspass"         => password_hash($pass, PASSWORD_DEFAULT), // ← siempre hashear!
+        "usdeshabilitado" => null
+    ];
+
+    // alta() devuelve el objeto o false
+    return $abm->alta($param) !== false;
+}
+
+
+/**
+ * Edita un usuario existente (sin tocar contraseña)
+ * @param int    $id       ID del usuario
+ * @param string $nombre   Nuevo nombre
+ * @param string $mail     Nuevo mail
+ * @return bool
  */
-    public function EditarUsuario($abm)
-    {
-        $abm = new AbmUsuario();
-
-        $param = [
-            "idusuario" => $_POST["idusuario"],
-            "usnombre" => $_POST["usnombre"],
-            "usmail"   => $_POST["usmail"]
-        ];
-
-        // Modifica SIN tocar contraseña
-        $abm->modificacion($param);
-
-        header("Location: ../panelUsuarios.php?edit=1");
-        exit;
+public function editarUsuario($id, $nombre, $mail)
+{
+    if ($id <= 0 || empty(trim($nombre)) || empty(trim($mail))) {
+        return false;
     }
+
+    $abm = new AbmUsuario();
+
+    $param = [
+        "idusuario" => (int)$id,
+        "usnombre"  => trim($nombre),
+        "usmail"    => trim($mail)
+        // no tocamos uspass
+    ];
+
+    return $abm->modificacion($param);
+}
 }

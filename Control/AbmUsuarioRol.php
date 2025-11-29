@@ -160,21 +160,23 @@ class AbmUsuarioRol
      * Modificaiones de accion
      */
 
-    public function accionQuitarRol($abmUR,$usuario){
+    public function accionQuitarRol($abmUR, $usuario)
+    {
 
         $result = $abmUR->quitarRolSeguro(
-        $usuario->getIdUsuario(),      // el que ejecuta
-        $_POST['idusuario'] ?? null,   // usuario objetivo
-        $_POST['idrol'] ?? null        // rol a quitar
+            $usuario->getIdUsuario(),      // el que ejecuta
+            $_POST['idusuario'] ?? null,   // usuario objetivo
+            $_POST['idrol'] ?? null        // rol a quitar
         );
 
         $_SESSION['mensaje'] = $result['msg'];
 
         header("Location: ../panelRoles.php");
         exit;
-        }
+    }
 
-    public function accionRolesDelUsuario($idusuario ){
+    public function accionRolesDelUsuario($idusuario)
+    {
 
         if (!$idusuario || !is_numeric($idusuario)) {
             echo json_encode([]);
@@ -191,30 +193,31 @@ class AbmUsuarioRol
         }
 
         exit;
-            }
+    }
 
 
-            /**
+    /**
      * Modificaiones de accion
      */
 
-    public function accionAsignarRoles($abmUsuarioRol, $rolesEnviados, $idusuario){
+    public function accionAsignarRoles($abmUsuarioRol, $rolesEnviados, $idusuario)
+    {
 
         // Primero borro todos los roles del usuario
-$rolesActuales = $abmUsuarioRol->rolesDeUsuario($idusuario);
+        $rolesActuales = $abmUsuarioRol->rolesDeUsuario($idusuario);
 
-foreach ($rolesActuales as $desc) {
-    // buscar id del rol
-    $rol = (new AbmRol())->buscar(["rodescripcion" => $desc])[0];
-    $abmUsuarioRol->quitarRol($idusuario, $rol->getIdRol());
-}
+        foreach ($rolesActuales as $desc) {
+            // buscar id del rol
+            $rol = (new AbmRol())->buscar(["rodescripcion" => $desc])[0];
+            $abmUsuarioRol->quitarRol($idusuario, $rol->getIdRol());
+        }
 
-// Agregar los nuevos
-foreach ($rolesEnviados as $idrol) {
-    $abmUsuarioRol->asignarRol($idusuario, $idrol);
-}
+        // Agregar los nuevos
+        foreach ($rolesEnviados as $idrol) {
+            $abmUsuarioRol->asignarRol($idusuario, $idrol);
+        }
 
-header("Location: panelUsuarios.php?roles=1");
-exit;
-            }
+        header("Location: panelUsuarios.php?roles=1");
+        exit;
+    }
 }
